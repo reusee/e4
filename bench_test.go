@@ -31,3 +31,16 @@ func BenchmarkCatchErr(b *testing.B) {
 		}
 	}
 }
+
+func BenchmarkCatchCheck(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		err := func() (err error) {
+			defer Catch(&err)
+			Check(io.EOF)
+			return
+		}()
+		if !errors.Is(err, io.EOF) {
+			b.Fatal()
+		}
+	}
+}
