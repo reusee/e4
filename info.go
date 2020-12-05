@@ -2,21 +2,32 @@ package e4
 
 import (
 	"fmt"
+	"sync"
 )
 
-type Info string
+type Info struct {
+	format     string
+	args       []any
+	str        string
+	formatOnce sync.Once
+}
 
 var _ error = new(Info)
 
 func (i *Info) Error() string {
-	return string(*i)
+	i.formatOnce.Do(func() {
+		i.str = fmt.Sprintf(i.format, i.args...)
+	})
+	return i.str
 }
 
 func NewInfo(format string, args ...any) WrapFunc {
 	return func(err error) error {
-		i := Info(fmt.Sprintf(format, args...))
 		return Chain{
-			Err:  &i,
+			Err: &Info{
+				format: format,
+				args:   args,
+			},
 			Prev: err,
 		}
 	}
