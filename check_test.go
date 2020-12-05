@@ -104,4 +104,28 @@ func TestCheck(t *testing.T) {
 		t.Fatal()
 	}
 
+	err = func() (err error) {
+		defer Catch(&err)
+		Check(io.EOF, func(err error) error {
+			return nil
+		})
+		return
+	}()
+	if err != nil {
+		t.Fatal()
+	}
+
+	err = func() (err error) {
+		defer Catch(
+			&err,
+			func(err error) error {
+				return nil
+			},
+		)
+		return io.EOF
+	}()
+	if err != nil {
+		t.Fatal()
+	}
+
 }

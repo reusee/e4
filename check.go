@@ -16,8 +16,10 @@ func Check(err error, fns ...WrapFunc) {
 	for _, fn := range fns {
 		err = fn(err)
 	}
-	if trace := new(Stacktrace); !as(err, &trace) {
-		err = NewStacktrace()(err)
+	if err != nil {
+		if trace := new(Stacktrace); !as(err, &trace) {
+			err = NewStacktrace()(err)
+		}
 	}
 	panic(&thrownError{
 		err: err,
