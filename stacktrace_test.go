@@ -1,6 +1,7 @@
 package e4
 
 import (
+	"errors"
 	"io"
 	"regexp"
 	"testing"
@@ -19,6 +20,20 @@ func TestStacktrace(t *testing.T) {
 		t.Fatalf("got %s", trace.Error())
 	}
 	if !is(trace, io.EOF) {
+		t.Fatal()
+	}
+}
+
+func TestDeepStacktrace(t *testing.T) {
+	var foo func(int) error
+	foo = func(i int) error {
+		if i < 128 {
+			return foo(i + 1)
+		}
+		return NewStacktrace()(io.EOF)
+	}
+	err := foo(1)
+	if !errors.Is(err, io.EOF) {
 		t.Fatal()
 	}
 }

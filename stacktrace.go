@@ -34,17 +34,13 @@ func (s *Stacktrace) Error() string {
 func NewStacktrace() WrapFunc {
 	return func(err error) error {
 		stacktrace := new(Stacktrace)
-		numPCs := 32
+		pcs := make([]uintptr, 32)
+		skip := 1
 		for {
-			pcs := make([]uintptr, numPCs)
-			n := runtime.Callers(1, pcs)
-			if n == len(pcs) { // NOCOVER
-				numPCs *= 2
-				continue
-			}
-			pcs = pcs[:n]
-			frames := runtime.CallersFrames(pcs)
+			n := runtime.Callers(skip, pcs)
+			frames := runtime.CallersFrames(pcs[:n])
 			for {
+				skip++
 				frame, more := frames.Next()
 				if strings.HasPrefix(frame.Function, "github.com/reusee/e4.") &&
 					!strings.HasPrefix(frame.Function, "github.com/reusee/e4.Test") {
@@ -60,7 +56,9 @@ func NewStacktrace() WrapFunc {
 					break
 				}
 			}
-			break
+			if n < len(pcs) {
+				break
+			}
 		}
 		return Chain{
 			Err:  stacktrace,
