@@ -55,3 +55,5 @@ func Catch(errp *error, fns ...WrapFunc) {
 var C = Check
 
 var T = Catch
+
+var Handle = Catch
