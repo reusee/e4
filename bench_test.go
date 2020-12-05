@@ -44,3 +44,16 @@ func BenchmarkCatchCheck(b *testing.B) {
 		}
 	}
 }
+
+func BenchmarkCatchCheckNil(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		err := func() (err error) {
+			defer Catch(&err)
+			Check(nil)
+			return
+		}()
+		if err != nil {
+			b.Fatal()
+		}
+	}
+}
