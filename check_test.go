@@ -138,4 +138,18 @@ func TestCheck(t *testing.T) {
 		t.Fatal()
 	}
 
+	// set return value and check
+	err = func() (err error) {
+		defer Handle(&err)
+		err = io.EOF
+		Check(io.ErrNoProgress)
+		return
+	}()
+	if !is(err, io.EOF) {
+		t.Fatal()
+	}
+	if !is(err, io.ErrNoProgress) {
+		t.Fatal()
+	}
+
 }
