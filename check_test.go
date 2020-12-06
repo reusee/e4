@@ -7,6 +7,8 @@ import (
 )
 
 func TestCheck(t *testing.T) {
+
+	// check and handle
 	err := func() (err error) {
 		defer Handle(&err)
 		Check(io.EOF)
@@ -16,6 +18,7 @@ func TestCheck(t *testing.T) {
 		t.Fatal()
 	}
 
+	// check with wrap funcs
 	err = func() (err error) {
 		defer Handle(&err)
 		Check(io.EOF, NewInfo("foo %s", "bar"))
@@ -35,6 +38,7 @@ func TestCheck(t *testing.T) {
 		t.Fatalf("got %s", err.Error())
 	}
 
+	// handle with wrap funcs
 	err = func() (err error) {
 		defer Handle(&err, NewInfo("foo %s", "bar"))
 		Check(io.EOF)
@@ -54,6 +58,7 @@ func TestCheck(t *testing.T) {
 		t.Fatalf("got %s", err.Error())
 	}
 
+	// check and handle nil
 	func() {
 		defer func() {
 			p := recover()
@@ -72,6 +77,7 @@ func TestCheck(t *testing.T) {
 		}()
 	}()
 
+	// non-check panic
 	func() {
 		defer func() {
 			p := recover()
@@ -85,6 +91,7 @@ func TestCheck(t *testing.T) {
 		}()
 	}()
 
+	// return and handle
 	err = func() (err error) {
 		defer Handle(&err, NewInfo("foo %s", "bar"))
 		return io.EOF
@@ -96,6 +103,7 @@ func TestCheck(t *testing.T) {
 		t.Fatal()
 	}
 
+	// return nil and handle
 	err = func() (err error) {
 		defer Handle(&err, NewInfo("foo %s", "bar"))
 		return nil
@@ -104,6 +112,7 @@ func TestCheck(t *testing.T) {
 		t.Fatal()
 	}
 
+	// set error to nil in check wrap func
 	err = func() (err error) {
 		defer Handle(&err)
 		Check(io.EOF, func(err error) error {
@@ -115,6 +124,7 @@ func TestCheck(t *testing.T) {
 		t.Fatal()
 	}
 
+	// set error to nil in handle wrap func
 	err = func() (err error) {
 		defer Handle(
 			&err,
