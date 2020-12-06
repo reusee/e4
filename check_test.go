@@ -1,9 +1,15 @@
 package e4
 
 import (
+	"errors"
 	"io"
 	"regexp"
 	"testing"
+)
+
+var (
+	is = errors.Is
+	as = errors.As
 )
 
 func TestCheck(t *testing.T) {

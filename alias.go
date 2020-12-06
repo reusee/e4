@@ -1,7 +1,6 @@
 package e4
 
 import (
-	"errors"
 	"fmt"
 )
 
@@ -10,7 +9,5 @@ type (
 )
 
 var (
-	is = errors.Is
-	as = errors.As
 	pt = fmt.Printf
 )

@@ -1,5 +1,7 @@
 package e4
 
+import "errors"
+
 type thrownError struct {
 	err error
 	sig int64
@@ -17,7 +19,7 @@ func Check(err error, fns ...WrapFunc) {
 		err = fn(err)
 	}
 	if err != nil {
-		if trace := new(Stacktrace); !as(err, &trace) {
+		if trace := new(Stacktrace); !errors.As(err, &trace) {
 			err = NewStacktrace()(err)
 		}
 	}
