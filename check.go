@@ -26,7 +26,7 @@ func Check(err error, fns ...WrapFunc) {
 	})
 }
 
-func Catch(errp *error, fns ...WrapFunc) {
+func Handle(errp *error, fns ...WrapFunc) {
 	var err error
 	if p := recover(); p != nil {
 		if e, ok := p.(*thrownError); ok {
@@ -51,9 +51,3 @@ func Catch(errp *error, fns ...WrapFunc) {
 		panic(err)
 	}
 }
-
-var C = Check
-
-var T = Catch
-
-var Handle = Catch

@@ -8,7 +8,7 @@ import (
 
 func TestCheck(t *testing.T) {
 	err := func() (err error) {
-		defer Catch(&err)
+		defer Handle(&err)
 		Check(io.EOF)
 		return
 	}()
@@ -17,7 +17,7 @@ func TestCheck(t *testing.T) {
 	}
 
 	err = func() (err error) {
-		defer Catch(&err)
+		defer Handle(&err)
 		Check(io.EOF, NewInfo("foo %s", "bar"))
 		return
 	}()
@@ -36,7 +36,7 @@ func TestCheck(t *testing.T) {
 	}
 
 	err = func() (err error) {
-		defer Catch(&err, NewInfo("foo %s", "bar"))
+		defer Handle(&err, NewInfo("foo %s", "bar"))
 		Check(io.EOF)
 		return
 	}()
@@ -66,7 +66,7 @@ func TestCheck(t *testing.T) {
 			}
 		}()
 		func() (err error) {
-			defer Catch(nil)
+			defer Handle(nil)
 			Check(io.EOF)
 			return
 		}()
@@ -80,13 +80,13 @@ func TestCheck(t *testing.T) {
 			}
 		}()
 		func() (err error) {
-			defer Catch(&err)
+			defer Handle(&err)
 			panic(42)
 		}()
 	}()
 
 	err = func() (err error) {
-		defer Catch(&err, NewInfo("foo %s", "bar"))
+		defer Handle(&err, NewInfo("foo %s", "bar"))
 		return io.EOF
 	}()
 	if err.Error() != "foo bar\nEOF" {
@@ -97,7 +97,7 @@ func TestCheck(t *testing.T) {
 	}
 
 	err = func() (err error) {
-		defer Catch(&err, NewInfo("foo %s", "bar"))
+		defer Handle(&err, NewInfo("foo %s", "bar"))
 		return nil
 	}()
 	if err != nil {
@@ -105,7 +105,7 @@ func TestCheck(t *testing.T) {
 	}
 
 	err = func() (err error) {
-		defer Catch(&err)
+		defer Handle(&err)
 		Check(io.EOF, func(err error) error {
 			return nil
 		})
@@ -116,7 +116,7 @@ func TestCheck(t *testing.T) {
 	}
 
 	err = func() (err error) {
-		defer Catch(
+		defer Handle(
 			&err,
 			func(err error) error {
 				return nil

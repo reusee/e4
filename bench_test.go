@@ -8,10 +8,10 @@ import (
 
 var testErr error
 
-func BenchmarkCatchNil(b *testing.B) {
+func BenchmarkHandleNil(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		err := func() (err error) {
-			defer Catch(&err)
+			defer Handle(&err)
 			return nil
 		}()
 		if err != nil {
@@ -20,10 +20,10 @@ func BenchmarkCatchNil(b *testing.B) {
 	}
 }
 
-func BenchmarkCatchErr(b *testing.B) {
+func BenchmarkHandleErr(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		err := func() (err error) {
-			defer Catch(&err)
+			defer Handle(&err)
 			return io.EOF
 		}()
 		if !errors.Is(err, io.EOF) {
@@ -32,10 +32,10 @@ func BenchmarkCatchErr(b *testing.B) {
 	}
 }
 
-func BenchmarkCatchCheck(b *testing.B) {
+func BenchmarkHandleCheck(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		err := func() (err error) {
-			defer Catch(&err)
+			defer Handle(&err)
 			Check(io.EOF)
 			return
 		}()
@@ -45,10 +45,10 @@ func BenchmarkCatchCheck(b *testing.B) {
 	}
 }
 
-func BenchmarkCatchCheckNil(b *testing.B) {
+func BenchmarkHandleCheckNil(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		err := func() (err error) {
-			defer Catch(&err)
+			defer Handle(&err)
 			Check(nil)
 			return
 		}()
