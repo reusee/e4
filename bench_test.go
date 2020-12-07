@@ -32,6 +32,19 @@ func BenchmarkHandleErr(b *testing.B) {
 	}
 }
 
+func BenchmarkHandleCheckNil(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		err := func() (err error) {
+			defer Handle(&err)
+			Check(nil)
+			return
+		}()
+		if err != nil {
+			b.Fatal()
+		}
+	}
+}
+
 func BenchmarkHandleCheck(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		err := func() (err error) {
@@ -45,14 +58,20 @@ func BenchmarkHandleCheck(b *testing.B) {
 	}
 }
 
-func BenchmarkHandleCheckNil(b *testing.B) {
+func BenchmarkHandleCheckDeep(b *testing.B) {
+	var fn func(int) error
+	fn = func(i int) (err error) {
+		defer Handle(&err)
+		if i == 0 {
+			return io.EOF
+		}
+		Check(fn(i - 1))
+		return
+	}
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		err := func() (err error) {
-			defer Handle(&err)
-			Check(nil)
-			return
-		}()
-		if err != nil {
+		err := fn(30)
+		if !errors.Is(err, io.EOF) {
 			b.Fatal()
 		}
 	}
