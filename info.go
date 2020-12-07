@@ -7,8 +7,8 @@ import (
 
 type Info struct {
 	format     string
-	args       []any
 	str        string
+	args       []any
 	formatOnce sync.Once
 }
 
