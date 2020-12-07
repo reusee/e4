@@ -158,4 +158,22 @@ func TestCheck(t *testing.T) {
 		t.Fatal()
 	}
 
+	// auto chain wrap func returns
+	err = func() (err error) {
+		defer Handle(&err)
+		Check(
+			io.EOF,
+			func(err error) error {
+				return io.ErrClosedPipe
+			},
+		)
+		return
+	}()
+	if !is(err, io.EOF) {
+		t.Fatal()
+	}
+	if !is(err, io.ErrClosedPipe) {
+		t.Fatal()
+	}
+
 }

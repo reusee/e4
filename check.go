@@ -16,7 +16,19 @@ func Check(err error, fns ...WrapFunc) {
 		return
 	}
 	for _, fn := range fns {
-		err = fn(err)
+		e := fn(err)
+		if e != nil {
+			if _, ok := e.(Chain); !ok {
+				err = Chain{
+					Err:  e,
+					Prev: err,
+				}
+			} else {
+				err = e
+			}
+		} else {
+			err = e
+		}
 	}
 	if err != nil {
 		if trace := new(Stacktrace); !errors.As(err, &trace) {
@@ -51,7 +63,19 @@ func Handle(errp *error, fns ...WrapFunc) {
 		return
 	}
 	for _, fn := range fns {
-		err = fn(err)
+		e := fn(err)
+		if e != nil {
+			if _, ok := e.(Chain); !ok {
+				err = Chain{
+					Err:  e,
+					Prev: err,
+				}
+			} else {
+				err = e
+			}
+		} else {
+			err = e
+		}
 	}
 	if errp != nil {
 		*errp = err
