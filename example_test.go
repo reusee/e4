@@ -16,9 +16,17 @@ func ExampleCheck_handle() {
 	}
 
 	err := fn()
-	fmt.Print(errors.Is(err, io.EOF))
+	fmt.Println(errors.Is(err, io.EOF))
 
-	// Output: true
+	// Check wraps stack trace automatically
+	var stacktrace *Stacktrace
+	if errors.As(err, &stacktrace) {
+		fmt.Println(len(stacktrace.Frames) > 0)
+	}
+
+	// Output:
+	// true
+	// true
 }
 
 func ExampleCheck_wrap_function() {
