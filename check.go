@@ -26,6 +26,19 @@ func Check(err error, fns ...WrapFunc) {
 	})
 }
 
+func Fatal(err error, fns ...WrapFunc) {
+	if err == nil {
+		return
+	}
+	err = Wrap(err, fns...)
+	if err != nil {
+		if trace := new(Stacktrace); !errors.As(err, &trace) {
+			err = NewStacktrace()(err)
+		}
+	}
+	panic(err)
+}
+
 func Handle(errp *error, fns ...WrapFunc) {
 	var err error
 	if errp != nil && *errp != nil {

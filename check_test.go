@@ -177,3 +177,22 @@ func TestCheck(t *testing.T) {
 	}
 
 }
+
+func TestFatal(t *testing.T) {
+	func() {
+		defer func() {
+			p := recover()
+			if p == nil {
+				t.Fatal()
+			}
+			err, ok := p.(error)
+			if !ok {
+				t.Fatal()
+			}
+			if !is(err, io.EOF) {
+				t.Fatal()
+			}
+		}()
+		Fatal(io.EOF)
+	}()
+}
