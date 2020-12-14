@@ -2,13 +2,12 @@ package e4
 
 import "errors"
 
-type thrownError struct {
+type check struct {
 	err error
-	sig int64
 }
 
-func (t *thrownError) String() string { // NOCOVER
-	return t.err.Error()
+func (c *check) String() string { // NOCOVER
+	return c.err.Error()
 }
 
 func Check(err error, fns ...WrapFunc) {
@@ -21,7 +20,7 @@ func Check(err error, fns ...WrapFunc) {
 			err = NewStacktrace()(err)
 		}
 	}
-	panic(&thrownError{
+	panic(&check{
 		err: err,
 	})
 }
@@ -45,7 +44,7 @@ func Handle(errp *error, fns ...WrapFunc) {
 		err = *errp
 	}
 	if p := recover(); p != nil {
-		if e, ok := p.(*thrownError); ok {
+		if e, ok := p.(*check); ok {
 			if err != nil {
 				err = Chain{
 					Err:  e.err,
