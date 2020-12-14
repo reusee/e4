@@ -26,7 +26,7 @@ func Check(err error, fns ...WrapFunc) {
 	})
 }
 
-func Fatal(err error, fns ...WrapFunc) {
+func Must(err error, fns ...WrapFunc) {
 	if err == nil {
 		return
 	}

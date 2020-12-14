@@ -178,7 +178,7 @@ func TestCheck(t *testing.T) {
 
 }
 
-func TestFatal(t *testing.T) {
+func TestMust(t *testing.T) {
 	func() {
 		defer func() {
 			p := recover()
@@ -193,6 +193,6 @@ func TestFatal(t *testing.T) {
 				t.Fatal()
 			}
 		}()
-		Fatal(io.EOF)
+		Must(io.EOF)
 	}()
 }
