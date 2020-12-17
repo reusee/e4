@@ -40,21 +40,17 @@ func Must(err error, fns ...WrapFunc) {
 
 func Handle(errp *error, fns ...WrapFunc) {
 	var err error
-	if errp != nil && *errp != nil {
-		err = *errp
-	}
 	if p := recover(); p != nil {
 		if e, ok := p.(*check); ok {
-			if err != nil {
-				err = Chain{
-					Err:  e.err,
-					Prev: err,
-				}
-			} else {
-				err = e.err
-			}
+			err = e.err
 		} else {
 			panic(p)
+		}
+	}
+	// consider **errp only when err is nil
+	if err == nil {
+		if errp != nil && *errp != nil {
+			err = *errp
 		}
 	}
 	if err == nil {
