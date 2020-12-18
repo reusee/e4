@@ -26,7 +26,7 @@ func (s *Stacktrace) Error() string {
 		} else {
 			b.WriteString("\n-    ")
 		}
-		b.WriteString(fmt.Sprintf("%s:%d %s", frame.File, frame.Line, frame.Function))
+		b.WriteString(fmt.Sprintf("%s:%d ## %s", frame.File, frame.Line, frame.Function))
 	}
 	return b.String()
 }
