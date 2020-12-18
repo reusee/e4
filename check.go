@@ -14,27 +14,27 @@ func Check(err error, fns ...WrapFunc) {
 	if err == nil {
 		return
 	}
+	err = DefaultWrap(err, fns...)
+	panic(&check{
+		err: err,
+	})
+}
+
+func DefaultWrap(err error, fns ...WrapFunc) error {
 	err = Wrap(err, fns...)
 	if err != nil {
 		if trace := new(Stacktrace); !errors.As(err, &trace) {
 			err = NewStacktrace()(err)
 		}
 	}
-	panic(&check{
-		err: err,
-	})
+	return err
 }
 
 func Must(err error, fns ...WrapFunc) {
 	if err == nil {
 		return
 	}
-	err = Wrap(err, fns...)
-	if err != nil {
-		if trace := new(Stacktrace); !errors.As(err, &trace) {
-			err = NewStacktrace()(err)
-		}
-	}
+	err = DefaultWrap(err, fns...)
 	panic(err)
 }
 
