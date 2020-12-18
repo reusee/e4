@@ -22,15 +22,10 @@ func (i *Info) Error() string {
 }
 
 func NewInfo(format string, args ...any) WrapFunc {
-	return func(err error) error {
-		return Chain{
-			Err: &Info{
-				format: format,
-				args:   args,
-			},
-			Prev: err,
-		}
-	}
+	return With(&Info{
+		format: format,
+		args:   args,
+	})
 }
 
 var WrapInfo = NewInfo

@@ -31,3 +31,12 @@ func (c Chain) Error() string {
 	}
 	return b.String()
 }
+
+func With(err error) WrapFunc {
+	return func(prev error) error {
+		return Chain{
+			Err:  err,
+			Prev: prev,
+		}
+	}
+}

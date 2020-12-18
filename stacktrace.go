@@ -59,12 +59,7 @@ func NewStacktrace() WrapFunc {
 			break
 		}
 	}
-	return func(err error) error {
-		return Chain{
-			Err:  stacktrace,
-			Prev: err,
-		}
-	}
+	return With(stacktrace)
 }
 
 var WithStacktrace = NewStacktrace
