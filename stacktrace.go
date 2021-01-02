@@ -56,11 +56,15 @@ func NewStacktrace() WrapFunc {
 				continue
 			}
 			dir, file := filepath.Split(frame.File)
+			mod, fn := filepath.Split(frame.Function)
+			if i := strings.Index(dir, mod); i > 0 {
+				dir = dir[i:]
+			}
 			stacktrace.Frames = append(stacktrace.Frames, Frame{
 				File:     file,
 				Dir:      dir,
 				Line:     frame.Line,
-				Function: frame.Function,
+				Function: fn,
 			})
 			if !more {
 				break
