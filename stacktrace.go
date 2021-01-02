@@ -2,6 +2,7 @@ package e4
 
 import (
 	"fmt"
+	"path/filepath"
 	"runtime"
 	"strings"
 )
@@ -12,6 +13,7 @@ type Stacktrace struct {
 
 type Frame struct {
 	File     string
+	Dir      string
 	Function string
 	Line     int
 }
@@ -26,7 +28,14 @@ func (s *Stacktrace) Error() string {
 		} else {
 			b.WriteString("\n-    ")
 		}
-		b.WriteString(fmt.Sprintf("%s:%d ## %s", frame.File, frame.Line, frame.Function))
+		//b.WriteString(fmt.Sprintf("%s:%d ## %s", frame.File, frame.Line, frame.Function))
+		b.WriteString(fmt.Sprintf(
+			"%s:%d %s %s",
+			frame.File,
+			frame.Line,
+			frame.Dir,
+			frame.Function,
+		))
 	}
 	return b.String()
 }
@@ -46,8 +55,10 @@ func NewStacktrace() WrapFunc {
 				// internal funcs
 				continue
 			}
+			dir, file := filepath.Split(frame.File)
 			stacktrace.Frames = append(stacktrace.Frames, Frame{
-				File:     frame.File,
+				File:     file,
+				Dir:      dir,
 				Line:     frame.Line,
 				Function: frame.Function,
 			})
