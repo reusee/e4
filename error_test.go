@@ -5,16 +5,16 @@ import (
 	"testing"
 )
 
-func TestChain(t *testing.T) {
-	err := Chain{
-		Err: Chain{
+func TestError(t *testing.T) {
+	err := Error{
+		Err: Error{
 			Err: io.EOF,
-			Prev: Chain{
+			Prev: Error{
 				Err:  io.ErrClosedPipe,
 				Prev: io.ErrNoProgress,
 			},
 		},
-		Prev: Chain{
+		Prev: Error{
 			Err:  io.ErrShortBuffer,
 			Prev: io.ErrUnexpectedEOF,
 		},

@@ -5,24 +5,24 @@ import (
 	"strings"
 )
 
-type Chain struct {
+type Error struct {
 	Err  error
 	Prev error
 }
 
-func (c Chain) Is(target error) bool {
+func (c Error) Is(target error) bool {
 	return errors.Is(c.Err, target)
 }
 
-func (c Chain) As(target interface{}) bool {
+func (c Error) As(target interface{}) bool {
 	return errors.As(c.Err, target)
 }
 
-func (c Chain) Unwrap() error {
+func (c Error) Unwrap() error {
 	return c.Prev
 }
 
-func (c Chain) Error() string {
+func (c Error) Error() string {
 	var b strings.Builder
 	b.WriteString(c.Err.Error())
 	if c.Prev != nil {
@@ -34,7 +34,7 @@ func (c Chain) Error() string {
 
 func With(err error) WrapFunc {
 	return func(prev error) error {
-		return Chain{
+		return Error{
 			Err:  err,
 			Prev: prev,
 		}

@@ -32,7 +32,7 @@ func ExampleCheck_handle() {
 func ExampleCheck_wrap_function() {
 
 	wrapWithChain := func(err error) error {
-		return Chain{
+		return Error{
 			Err:  os.ErrClosed,
 			Prev: err,
 		}
@@ -66,7 +66,7 @@ func ExampleCheck_wrap_function() {
 func ExampleHandle_wrap_function() {
 
 	wrapWithChain := func(err error) error {
-		return Chain{
+		return Error{
 			Err:  os.ErrClosed,
 			Prev: err,
 		}
