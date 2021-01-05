@@ -54,7 +54,7 @@ func TestCheck(t *testing.T) {
 		t.Fatal()
 	}
 	ok, e = regexp.MatchString(
-		"foo bar\n> at .*check_test.go:[0-9]+.*\n-.*\n-.*\n-.*\nEOF",
+		"foo bar\n# .*check_test.go:[0-9]+.*\n-.*\n-.*\n-.*\nEOF",
 		err.Error(),
 	)
 	if e != nil {

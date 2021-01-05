@@ -24,9 +24,9 @@ func (s *Stacktrace) Error() string {
 	var b strings.Builder
 	for i, frame := range s.Frames {
 		if i == 0 {
-			b.WriteString("> at ")
+			b.WriteString("# ")
 		} else {
-			b.WriteString("\n-    ")
+			b.WriteString("\n- ")
 		}
 		//b.WriteString(fmt.Sprintf("%s:%d ## %s", frame.File, frame.Line, frame.Function))
 		b.WriteString(fmt.Sprintf(
