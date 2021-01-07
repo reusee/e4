@@ -192,6 +192,49 @@ func TestCheck(t *testing.T) {
 		t.Fatal()
 	}
 
+	// multiple handle
+	err = func() (err error) {
+		defer Handle(&err)
+		defer Handle(&err)
+		return io.EOF
+	}()
+	if !is(err, io.EOF) {
+		t.Fatal()
+	}
+
+	// multiple handle and wrap
+	err = func() (err error) {
+		defer Handle(&err, With(io.ErrClosedPipe))
+		defer Handle(&err, With(io.ErrNoProgress))
+		return io.EOF
+	}()
+	if !is(err, io.EOF) {
+		t.Fatal()
+	}
+	if !is(err, io.ErrClosedPipe) {
+		t.Fatal()
+	}
+	if !is(err, io.ErrNoProgress) {
+		t.Fatal()
+	}
+
+	// check and multiple handle and wrap
+	err = func() (err error) {
+		defer Handle(&err, With(io.ErrClosedPipe))
+		defer Handle(&err, With(io.ErrNoProgress))
+		Check(io.EOF)
+		return
+	}()
+	if !is(err, io.EOF) {
+		t.Fatal()
+	}
+	if !is(err, io.ErrClosedPipe) {
+		t.Fatal()
+	}
+	if !is(err, io.ErrNoProgress) {
+		t.Fatal()
+	}
+
 }
 
 func TestMust(t *testing.T) {
