@@ -15,7 +15,7 @@ func Wrap(err error, fns ...WrapFunc) error {
 				err = e
 			}
 		} else {
-			err = e
+			err = nil
 		}
 	}
 	return err
