@@ -10,3 +10,10 @@ func WithClose(c io.Closer) WrapFunc {
 		return prev
 	}
 }
+
+func WithFunc(fn func()) WrapFunc {
+	return func(prev error) error {
+		fn()
+		return prev
+	}
+}
