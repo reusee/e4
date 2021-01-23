@@ -27,3 +27,20 @@ func TestWithCloser(t *testing.T) {
 		t.Fatal()
 	}
 }
+
+func TestIgnore(t *testing.T) {
+	err := func() (err error) {
+		defer Handle(&err, Ignore(io.EOF))
+		return io.EOF
+	}()
+	if err != nil {
+		t.Fatal()
+	}
+	err = func() (err error) {
+		defer Handle(&err, Ignore(io.EOF))
+		return io.ErrClosedPipe
+	}()
+	if !is(err, io.ErrClosedPipe) {
+		t.Fatal()
+	}
+}
