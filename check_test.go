@@ -235,6 +235,18 @@ func TestCheck(t *testing.T) {
 		t.Fatal()
 	}
 
+	// Check in defer function
+	err = func() (err error) {
+		defer Handle(&err)
+		defer func() {
+			Check(io.EOF)
+		}()
+		return
+	}()
+	if !is(err, io.EOF) {
+		t.Fatal()
+	}
+
 }
 
 func TestMust(t *testing.T) {
