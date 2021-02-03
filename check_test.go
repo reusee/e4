@@ -154,7 +154,28 @@ func TestCheck(t *testing.T) {
 	if !is(err, io.ErrNoProgress) {
 		t.Fatal()
 	}
-	if is(err, io.EOF) {
+	if !is(err, io.EOF) {
+		t.Fatal()
+	}
+
+	// set return value and check the same error
+	err = func() (err error) {
+		defer Handle(&err)
+		err = io.EOF
+		Check(err)
+		return
+	}()
+	if !is(err, io.EOF) {
+		t.Fatal()
+	}
+	er, ok := err.(Error)
+	if !ok {
+		t.Fatal()
+	}
+	if _, ok := er.Err.(*Stacktrace); !ok {
+		t.Fatal()
+	}
+	if er.Prev != io.EOF {
 		t.Fatal()
 	}
 

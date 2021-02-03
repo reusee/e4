@@ -47,10 +47,16 @@ func Handle(errp *error, fns ...WrapFunc) {
 			panic(p)
 		}
 	}
-	// consider **errp only when err is nil
-	if err == nil {
-		if errp != nil && *errp != nil {
+	if errp != nil && *errp != nil {
+		if err == nil {
 			err = *errp
+		} else {
+			if !errors.Is(err, *errp) && !errors.Is(*errp, err) {
+				err = Error{
+					Err:  err,
+					Prev: *errp,
+				}
+			}
 		}
 	}
 	if err == nil {
