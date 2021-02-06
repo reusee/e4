@@ -5,6 +5,8 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	"github.com/reusee/pr"
 )
 
 type Stacktrace struct {
@@ -40,9 +42,19 @@ func (s *Stacktrace) Error() string {
 	return b.String()
 }
 
+var pcsPool = pr.NewPool(
+	128,
+	func() any {
+		bs := make([]uintptr, 32)
+		return &bs
+	},
+)
+
 func NewStacktrace() WrapFunc {
 	stacktrace := new(Stacktrace)
-	pcs := make([]uintptr, 32)
+	v, put := pcsPool.Get()
+	defer put()
+	pcs := *(v.(*[]uintptr))
 	skip := 1
 	for {
 		n := runtime.Callers(skip, pcs)
