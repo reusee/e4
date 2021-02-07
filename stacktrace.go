@@ -16,6 +16,7 @@ type Stacktrace struct {
 type Frame struct {
 	File     string
 	Dir      string
+	Pkg      string
 	Function string
 	Line     int
 }
@@ -32,7 +33,8 @@ func (s *Stacktrace) Error() string {
 		}
 		//b.WriteString(fmt.Sprintf("%s:%d ## %s", frame.File, frame.Line, frame.Function))
 		b.WriteString(fmt.Sprintf(
-			"%s:%d %s %s",
+			"%s.%s:%d %s %s",
+			frame.Pkg,
 			frame.File,
 			frame.Line,
 			frame.Dir,
@@ -72,10 +74,12 @@ func NewStacktrace() WrapFunc {
 			if i := strings.Index(dir, mod); i > 0 {
 				dir = dir[i:]
 			}
+			pkg := fn[:strings.IndexByte(fn, '.')]
 			stacktrace.Frames = append(stacktrace.Frames, Frame{
 				File:     file,
 				Dir:      dir,
 				Line:     frame.Line,
+				Pkg:      pkg,
 				Function: fn,
 			})
 			if !more {

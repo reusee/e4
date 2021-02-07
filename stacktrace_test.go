@@ -10,7 +10,7 @@ import (
 func TestStacktrace(t *testing.T) {
 	trace := NewStacktrace()(io.EOF)
 	ok, err := regexp.MatchString(
-		`\$ stacktrace_test.go:[0-9]+ .*/e4/ e4.TestStacktrace\n&.*\n&.*\nEOF`,
+		`\$ e4.stacktrace_test.go:[0-9]+ .*/e4/ e4.TestStacktrace\n&.*\n&.*\nEOF`,
 		trace.Error(),
 	)
 	if err != nil {
