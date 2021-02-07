@@ -1,10 +1,17 @@
-# e4
-error utilities version 4
+// +build ignore
 
-### Example
+package main
 
+import (
+	"errors"
+	"fmt"
+	"io"
+	"os"
+	"path/filepath"
 
-```
+	"github.com/reusee/e4"
+)
+
 var (
 	ce, he = e4.Check, e4.Handle
 )
@@ -41,4 +48,15 @@ func CopyFile(src, dst string) (err error) {
 }
 
 var ErrCopyFailed = errors.New("copy failed")
-```
+
+func main() {
+
+	err := CopyFile("demo.go", filepath.Join(os.TempDir(), "demo.go"))
+	ce(err)
+
+	err = CopyFile("demo.go", "/")
+	if !errors.Is(err, ErrCopyFailed) {
+		panic("shoule be ErrCopyFailed")
+	}
+
+}
