@@ -74,7 +74,10 @@ func NewStacktrace() WrapFunc {
 			if i := strings.Index(dir, mod); i > 0 {
 				dir = dir[i:]
 			}
-			pkg := fn[:strings.IndexByte(fn, '.')]
+			var pkg string
+			if fn != "" {
+				pkg = fn[:strings.IndexByte(fn, '.')]
+			}
 			stacktrace.Frames = append(stacktrace.Frames, Frame{
 				File:     file,
 				Dir:      dir,
