@@ -52,10 +52,7 @@ func Handle(errp *error, fns ...WrapFunc) {
 			err = *errp
 		} else {
 			if !errors.Is(err, *errp) && !errors.Is(*errp, err) {
-				err = Error{
-					Err:  err,
-					Prev: *errp,
-				}
+				err = MakeErr(err, *errp)
 			}
 		}
 	}

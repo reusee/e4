@@ -7,10 +7,7 @@ func Wrap(err error, fns ...WrapFunc) error {
 		e := fn(err)
 		if e != nil {
 			if _, ok := e.(Error); !ok {
-				err = Error{
-					Err:  e,
-					Prev: err,
-				}
+				err = MakeErr(e, err)
 			} else {
 				err = e
 			}

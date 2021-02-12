@@ -6,19 +6,19 @@ import (
 )
 
 func TestError(t *testing.T) {
-	err := Error{
-		Err: Error{
-			Err: io.EOF,
-			Prev: Error{
-				Err:  io.ErrClosedPipe,
-				Prev: io.ErrNoProgress,
-			},
-		},
-		Prev: Error{
-			Err:  io.ErrShortBuffer,
-			Prev: io.ErrUnexpectedEOF,
-		},
-	}
+	err := MakeErr(
+		MakeErr(
+			io.EOF,
+			MakeErr(
+				io.ErrClosedPipe,
+				io.ErrNoProgress,
+			),
+		),
+		MakeErr(
+			io.ErrShortBuffer,
+			io.ErrUnexpectedEOF,
+		),
+	)
 	if !is(err, io.EOF) {
 		t.Fatal()
 	}

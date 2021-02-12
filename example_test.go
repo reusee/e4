@@ -32,10 +32,7 @@ func ExampleCheck_handle() {
 func ExampleCheck_wrap_function() {
 
 	wrapWithChain := func(err error) error {
-		return Error{
-			Err:  os.ErrClosed,
-			Prev: err,
-		}
+		return MakeErr(os.ErrClosed, err)
 	}
 
 	wrapAutoChain := func(err error) error {
@@ -66,10 +63,7 @@ func ExampleCheck_wrap_function() {
 func ExampleHandle_wrap_function() {
 
 	wrapWithChain := func(err error) error {
-		return Error{
-			Err:  os.ErrClosed,
-			Prev: err,
-		}
+		return MakeErr(os.ErrClosed, err)
 	}
 
 	wrapAutoChain := func(err error) error {
