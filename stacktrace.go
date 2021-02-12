@@ -96,7 +96,7 @@ func NewStacktrace() WrapFunc {
 	}
 	return func(prev error) error {
 		err := MakeErr(stacktrace, prev)
-		err.Bubble = errStacktrace
+		err.bubble = errStacktrace
 		return err
 	}
 }

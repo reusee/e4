@@ -6,20 +6,21 @@ import (
 )
 
 type Error struct {
-	Err    error
-	Prev   error
-	Bubble error
+	Err  error
+	Prev error
+
+	bubble error
 }
 
 func (c Error) Is(target error) bool {
-	if c.Bubble != nil && errors.Is(c.Bubble, target) {
+	if c.bubble != nil && errors.Is(c.bubble, target) {
 		return true
 	}
 	return errors.Is(c.Err, target)
 }
 
 func (c Error) As(target interface{}) bool {
-	if c.Bubble != nil && errors.As(c.Bubble, target) {
+	if c.bubble != nil && errors.As(c.bubble, target) {
 		return true
 	}
 	return errors.As(c.Err, target)
@@ -43,7 +44,7 @@ func MakeErr(err error, prev error) Error {
 	return Error{
 		Err:    err,
 		Prev:   prev,
-		Bubble: getBubble(prev),
+		bubble: getBubble(prev),
 	}
 }
 
@@ -57,6 +58,6 @@ func getBubble(err error) error {
 	if e, ok := err.(Error); !ok {
 		return nil
 	} else {
-		return e.Bubble
+		return e.bubble
 	}
 }
