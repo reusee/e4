@@ -23,7 +23,7 @@ func Check(err error, fns ...WrapFunc) {
 func DefaultWrap(err error, fns ...WrapFunc) error {
 	err = Wrap(err, fns...)
 	if err != nil {
-		if trace := new(Stacktrace); !errors.As(err, &trace) {
+		if !errors.Is(err, errStacktrace) {
 			err = NewStacktrace()(err)
 		}
 	}

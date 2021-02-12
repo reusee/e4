@@ -1,6 +1,7 @@
 package e4
 
 import (
+	"errors"
 	"fmt"
 	"path/filepath"
 	"runtime"
@@ -93,8 +94,14 @@ func NewStacktrace() WrapFunc {
 			break
 		}
 	}
-	return With(stacktrace)
+	return func(prev error) error {
+		err := MakeErr(stacktrace, prev)
+		err.Bubble = errStacktrace
+		return err
+	}
 }
+
+var errStacktrace = errors.New("stacktrace")
 
 var WithStacktrace = NewStacktrace
 
