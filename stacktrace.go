@@ -7,7 +7,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/reusee/pr"
+	"github.com/reusee/e4/internal"
 )
 
 type Stacktrace struct {
@@ -45,7 +45,7 @@ func (s *Stacktrace) Error() string {
 	return b.String()
 }
 
-var pcsPool = pr.NewPool(
+var pcsPool = internal.NewPool(
 	128,
 	func() any {
 		bs := make([]uintptr, 32)
