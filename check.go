@@ -63,6 +63,8 @@ func Handle(errp *error, fns ...WrapFunc) {
 	if errp != nil {
 		*errp = err
 	} else {
-		panic(err)
+		panic(&check{
+			err: err,
+		})
 	}
 }
