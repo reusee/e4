@@ -2,22 +2,12 @@ package e4
 
 import "errors"
 
-type check struct {
-	err error
-}
-
-func (c *check) String() string { // NOCOVER
-	return c.err.Error()
-}
-
 func Check(err error, fns ...WrapFunc) {
 	if err == nil {
 		return
 	}
 	err = DefaultWrap(err, fns...)
-	panic(&check{
-		err: err,
-	})
+	Throw(err)
 }
 
 func DefaultWrap(err error, fns ...WrapFunc) error {
@@ -41,7 +31,7 @@ func Must(err error, fns ...WrapFunc) {
 func Handle(errp *error, fns ...WrapFunc) {
 	var err error
 	if p := recover(); p != nil {
-		if e, ok := p.(*check); ok {
+		if e, ok := p.(*throw); ok {
 			err = e.err
 		} else {
 			panic(p)
@@ -63,8 +53,6 @@ func Handle(errp *error, fns ...WrapFunc) {
 	if errp != nil {
 		*errp = err
 	} else {
-		panic(&check{
-			err: err,
-		})
+		Throw(err)
 	}
 }
