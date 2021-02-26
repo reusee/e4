@@ -4,7 +4,8 @@ error utilities version 4
 ### Example
 
 
-```
+```go
+
 package main
 
 import (
@@ -26,9 +27,9 @@ func CopyFile(src, dst string) (err error) {
 	defer he(&err,
 		// annotate error with string info
 		e4.WithInfo("copy %s to %s", src, dst),
-		// chain another string error
+		// attach another string error
 		e4.With(fmt.Errorf("copy %s to %s", src, dst)),
-		// chain a sentinel error value
+		// attach a sentinel error value
 		e4.With(ErrCopyFailed),
 	)
 
@@ -58,7 +59,12 @@ func CopyFile(src, dst string) (err error) {
 	// check error with if statement
 	if err != nil {
 		// throw error
-		e4.Throw(err)
+		e4.Throw(
+			// wrap errors manually
+			e4.Wrap(err,
+				e4.WithInfo("copy failed"),
+			),
+		)
 	}
 	ce(w.Close())
 
@@ -77,5 +83,18 @@ func main() {
 		panic("shoule be ErrCopyFailed")
 	}
 
+	println(err.Error())
+	/*
+	  copy demo.go to /
+	  copy demo.go to /
+	  $ main.demo.go:39 /home/reus/reusee/e4/ main.CopyFile
+	  & main.demo.go:75 /home/reus/reusee/e4/ main.main
+	  & runtime.proc.go:225 /usr/lib/go/src/runtime/ runtime.main
+	  & runtime.asm_amd64.s:1371 /usr/lib/go/src/runtime/ runtime.goexit
+	  create /
+	  open /: is a directory
+	*/
+
 }
+
 ```
