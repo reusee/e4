@@ -144,6 +144,8 @@ func main() {
 							}
 						}
 
+						//TODO check handle with non-local variable
+
 						if body != nil {
 							checkOK := false
 							ast.Inspect(body, func(node ast.Node) bool {
