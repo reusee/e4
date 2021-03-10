@@ -195,9 +195,9 @@ func main() {
 										continue
 									}
 									// must define inside signature
-									if !(defIdent.Pos() > signature.Pos() && defIdent.End() < signature.End()) {
+									if !(defIdent.Pos() > signature.Results.Pos() && defIdent.End() < signature.Results.End()) {
 										pt("should pass error defined at %s\n",
-											pkg.Fset.Position(signature.Pos()))
+											pkg.Fset.Position(signature.Results.Pos()))
 										return false
 									}
 									checkOK = true
