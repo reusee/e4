@@ -100,20 +100,20 @@ func main() {
 		errorType := tv.Type
 
 		// check usages
-		found := make(map[string]bool)
 		for _, check := range checkObjects {
-			for ident, obj := range pkg.TypesInfo.Uses {
+			for checkIdent, obj := range pkg.TypesInfo.Uses {
 				if obj != check {
 					continue
 				}
 				for _, file := range pkg.Syntax {
-					path, exact := astutil.PathEnclosingInterval(file, ident.Pos(), ident.Pos())
+					path, exact := astutil.PathEnclosingInterval(file, checkIdent.Pos(), checkIdent.Pos())
 					if !exact {
 						continue
 					}
 					for _, node := range path {
 
 						var body *ast.BlockStmt
+						var signature *ast.FuncType
 
 						if fnLit, ok := node.(*ast.FuncLit); ok {
 							// function literal
@@ -127,6 +127,7 @@ func main() {
 								errorType,
 							) {
 								body = fnLit.Body
+								signature = fnLit.Type
 							}
 
 						} else if fnDecl, ok := node.(*ast.FuncDecl); ok {
@@ -141,34 +142,77 @@ func main() {
 								errorType,
 							) {
 								body = fnDecl.Body
+								signature = fnDecl.Type
 							}
 						}
 
-						//TODO check handle with non-local variable
-
 						if body != nil {
 							checkOK := false
-							ast.Inspect(body, func(node ast.Node) bool {
-								id, ok := node.(*ast.Ident)
-								if !ok {
-									return true
+							// find handle call before check call
+							for _, stmt := range body.List {
+								if stmt.Pos() > checkIdent.End() {
+									// stmt after check
+									break
 								}
-								obj := pkg.TypesInfo.Uses[id]
-								for _, handleObj := range handleObjects {
-									if obj == handleObj {
-										checkOK = true
-										return false
+								deferStmt, ok := stmt.(*ast.DeferStmt)
+								if !ok {
+									// not defer
+									continue
+								}
+								callIdent, ok := deferStmt.Call.Fun.(*ast.Ident)
+								if !ok {
+									// not call by identifier
+									continue
+								}
+								callObj := pkg.TypesInfo.Uses[callIdent]
+								isHandleObject := false
+								for _, obj := range handleObjects {
+									if callObj == obj {
+										isHandleObject = true
+										break
 									}
 								}
-								return true
-							})
-							if !checkOK {
-								pos := pkg.Fset.Position(body.Pos()).String()
-								if _, ok := found[pos]; !ok {
-									pt("%s\n", pos)
-									found[pos] = true
+								if !isHandleObject {
+									// not handle object
+									continue
 								}
+								// check target argument of handle call
+								target := deferStmt.Call.Args[0]
+								targetExpr, ok := target.(*ast.UnaryExpr)
+								if !ok {
+									pt("expecting unary expression: %s\n", pkg.Fset.Position(target.Pos()).String())
+									return false
+								}
+								errIdent, ok := targetExpr.X.(*ast.Ident)
+								if !ok {
+									pt("expecting error identifier: %s\n", pkg.Fset.Position(target.Pos()).String())
+									return false
+								}
+								errObj := pkg.TypesInfo.Uses[errIdent]
+								// find def of error object
+								for defIdent, defObj := range pkg.TypesInfo.Defs {
+									if defObj != errObj {
+										continue
+									}
+									// must define inside signature
+									if !(defIdent.Pos() > signature.Pos() && defIdent.End() < signature.End()) {
+										pt("should pass error defined at %s\n",
+											pkg.Fset.Position(signature.Pos()))
+										return false
+									}
+									checkOK = true
+								}
+
 							}
+
+							if !checkOK {
+								pt(
+									"check %s should be handle inside %s\n",
+									pkg.Fset.Position(checkIdent.Pos()).String(),
+									pkg.Fset.Position(body.Pos()).String(),
+								)
+							}
+
 							break
 						}
 
