@@ -10,6 +10,13 @@ func Check(err error, fns ...WrapFunc) {
 	Throw(err)
 }
 
+func CheckerWith(fns ...WrapFunc) func(error, ...WrapFunc) {
+	return func(err error, wrapFuncs ...WrapFunc) {
+		err = Wrap(err, fns...)
+		Check(err, wrapFuncs...)
+	}
+}
+
 func DefaultWrap(err error, fns ...WrapFunc) error {
 	err = Wrap(err, fns...)
 	if err != nil {
