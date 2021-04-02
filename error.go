@@ -9,20 +9,14 @@ type Error struct {
 	Err  error
 	Prev error
 
-	bubble error
+	flag uint64
 }
 
 func (c Error) Is(target error) bool {
-	if c.bubble != nil && errors.Is(c.bubble, target) {
-		return true
-	}
 	return errors.Is(c.Err, target)
 }
 
 func (c Error) As(target interface{}) bool {
-	if c.bubble != nil && errors.As(c.bubble, target) {
-		return true
-	}
 	return errors.As(c.Err, target)
 }
 
@@ -42,9 +36,9 @@ func (c Error) Error() string {
 
 func MakeErr(err error, prev error) Error {
 	return Error{
-		Err:    err,
-		Prev:   prev,
-		bubble: getBubble(prev),
+		Err:  err,
+		Prev: prev,
+		flag: getFlag(err) | getFlag(prev),
 	}
 }
 
@@ -54,10 +48,10 @@ func With(err error) WrapFunc {
 	}
 }
 
-func getBubble(err error) error {
+func getFlag(err error) uint64 {
 	if e, ok := err.(Error); !ok {
-		return nil
+		return 0
 	} else {
-		return e.bubble
+		return e.flag
 	}
 }

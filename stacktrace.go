@@ -96,8 +96,16 @@ func NewStacktrace() WrapFunc {
 	}
 	return func(prev error) error {
 		err := MakeErr(stacktrace, prev)
-		err.bubble = errStacktrace
+		err.flag |= flagStacktraceIncluded
 		return err
+	}
+}
+
+func stacktraceIncluded(err error) bool {
+	if e, ok := err.(Error); !ok {
+		return false
+	} else {
+		return e.flag&flagStacktraceIncluded > 0
 	}
 }
 

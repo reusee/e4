@@ -19,10 +19,8 @@ func CheckerWith(fns ...WrapFunc) func(error, ...WrapFunc) {
 
 func DefaultWrap(err error, fns ...WrapFunc) error {
 	err = Wrap(err, fns...)
-	if err != nil {
-		if !errors.Is(err, errStacktrace) {
-			err = NewStacktrace()(err)
-		}
+	if err != nil && !stacktraceIncluded(err) {
+		err = NewStacktrace()(err)
 	}
 	return err
 }
