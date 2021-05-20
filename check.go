@@ -10,10 +10,32 @@ func Check(err error, fns ...WrapFunc) {
 	Throw(err)
 }
 
+func CheckPtr(ptr *error, fns ...WrapFunc) {
+	if ptr == nil {
+		return
+	}
+	if *ptr == nil {
+		return
+	}
+	err := DefaultWrap(*ptr, fns...)
+	*ptr = err
+	Throw(err)
+}
+
 func CheckerWith(fns ...WrapFunc) func(error, ...WrapFunc) {
 	return func(err error, wrapFuncs ...WrapFunc) {
 		err = Wrap(err, fns...)
 		Check(err, wrapFuncs...)
+	}
+}
+
+func PtrCheckerWith(fns ...WrapFunc) func(*error, ...WrapFunc) {
+	return func(ptr *error, wrapFuncs ...WrapFunc) {
+		if ptr == nil {
+			return
+		}
+		*ptr = Wrap(*ptr, fns...)
+		CheckPtr(ptr, wrapFuncs...)
 	}
 }
 
