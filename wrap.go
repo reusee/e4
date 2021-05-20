@@ -12,7 +12,7 @@ func Wrap(err error, fns ...WrapFunc) error {
 				err = e
 			}
 		} else {
-			err = nil
+			return nil
 		}
 	}
 	return err
