@@ -17,8 +17,14 @@ func (c *throw) Unwrap() error {
 }
 
 func Throw(err error, fns ...WrapFunc) {
+	if err == nil {
+		return
+	}
 	if len(fns) > 0 {
 		err = DefaultWrap(err, fns...)
+	}
+	if err == nil {
+		return
 	}
 	panic(&throw{
 		err: err,

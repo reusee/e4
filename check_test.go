@@ -333,3 +333,9 @@ func TestPtrChecker(t *testing.T) {
 	}
 
 }
+
+func TestCheckIgnoreNoHandle(t *testing.T) {
+	Check(io.EOF, func(prev error) error {
+		return nil
+	})
+}
