@@ -1,6 +1,11 @@
 # e4
 error utilities version 4
 
+### Features
+
+* ergonomic error checking without if statement
+* ad-hoc chaining error values
+
 ### Example
 
 
