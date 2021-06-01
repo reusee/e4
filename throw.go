@@ -16,15 +16,15 @@ func (c *throw) Unwrap() error {
 	return c.err
 }
 
-func Throw(err error, fns ...WrapFunc) {
+func Throw(err error, fns ...WrapFunc) error {
 	if err == nil {
-		return
+		return nil
 	}
 	if len(fns) > 0 {
 		err = DefaultWrap(err, fns...)
 	}
 	if err == nil {
-		return
+		return nil
 	}
 	panic(&throw{
 		err: err,

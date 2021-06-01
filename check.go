@@ -2,40 +2,40 @@ package e4
 
 import "errors"
 
-func Check(err error, fns ...WrapFunc) {
+func Check(err error, fns ...WrapFunc) error {
 	if err == nil {
-		return
+		return nil
 	}
 	err = DefaultWrap(err, fns...)
-	Throw(err)
+	return Throw(err)
 }
 
-func CheckPtr(ptr *error, fns ...WrapFunc) {
+func CheckPtr(ptr *error, fns ...WrapFunc) error {
 	if ptr == nil {
-		return
+		return nil
 	}
 	if *ptr == nil {
-		return
+		return nil
 	}
 	err := DefaultWrap(*ptr, fns...)
 	*ptr = err
-	Throw(err)
+	return Throw(err)
 }
 
-func CheckerWith(fns ...WrapFunc) func(error, ...WrapFunc) {
-	return func(err error, wrapFuncs ...WrapFunc) {
+func CheckerWith(fns ...WrapFunc) func(error, ...WrapFunc) error {
+	return func(err error, wrapFuncs ...WrapFunc) error {
 		err = Wrap(err, fns...)
-		Check(err, wrapFuncs...)
+		return Check(err, wrapFuncs...)
 	}
 }
 
-func PtrCheckerWith(fns ...WrapFunc) func(*error, ...WrapFunc) {
-	return func(ptr *error, wrapFuncs ...WrapFunc) {
+func PtrCheckerWith(fns ...WrapFunc) func(*error, ...WrapFunc) error {
+	return func(ptr *error, wrapFuncs ...WrapFunc) error {
 		if ptr == nil {
-			return
+			return nil
 		}
 		*ptr = Wrap(*ptr, fns...)
-		CheckPtr(ptr, wrapFuncs...)
+		return CheckPtr(ptr, wrapFuncs...)
 	}
 }
 
@@ -47,9 +47,9 @@ func DefaultWrap(err error, fns ...WrapFunc) error {
 	return err
 }
 
-func Must(err error, fns ...WrapFunc) {
+func Must(err error, fns ...WrapFunc) error {
 	if err == nil {
-		return
+		return nil
 	}
 	err = DefaultWrap(err, fns...)
 	panic(err)

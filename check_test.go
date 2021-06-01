@@ -297,7 +297,8 @@ func TestCheckerWith(t *testing.T) {
 		return prev
 	}
 	check := CheckerWith(ignoreEOF)
-	check(io.EOF)
+	err := check(io.EOF)
+	Check(err)
 }
 
 func TestPtrChecker(t *testing.T) {
