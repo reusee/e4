@@ -12,12 +12,12 @@ func (c closer) Close() error {
 	return c()
 }
 
-func TestWithCloser(t *testing.T) {
+func TestClose(t *testing.T) {
 	err := Wrap(io.EOF,
-		WithClose(closer(func() error {
+		Close(closer(func() error {
 			return io.ErrClosedPipe
 		})),
-		WithClose(closer(func() error {
+		Close(closer(func() error {
 			return nil
 		})),
 	)

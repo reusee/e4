@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func WithClose(c io.Closer) WrapFunc {
+func Close(c io.Closer) WrapFunc {
 	return func(prev error) error {
 		if err := c.Close(); err != nil {
 			return With(err)(prev)
@@ -15,7 +15,7 @@ func WithClose(c io.Closer) WrapFunc {
 	}
 }
 
-func WithFunc(fn func()) WrapFunc {
+func Do(fn func()) WrapFunc {
 	return func(prev error) error {
 		fn()
 		return prev

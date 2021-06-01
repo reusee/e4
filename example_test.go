@@ -145,7 +145,7 @@ func ExampleCheck_copyFile() {
 		w, err := os.Create(dst)
 		Check(err, WithInfo("create %s", dst))
 		defer w.Close()
-		defer Handle(&err, WithFunc(func() {
+		defer Handle(&err, Do(func() {
 			os.Remove(dst)
 		}))
 

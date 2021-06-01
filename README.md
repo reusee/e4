@@ -52,9 +52,9 @@ func CopyFile(src, dst string) (err error) {
 	// another error handling
 	defer he(&err,
 		// if error, close w
-		e4.WithClose(w),
+		e4.Close(w),
 		// if error, remove dst file
-		e4.WithFunc(func() {
+		e4.Do(func() {
 			os.Remove(dst)
 		}),
 	)
