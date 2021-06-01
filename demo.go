@@ -20,18 +20,16 @@ var (
 func CopyFile(src, dst string) (err error) {
 	// handle error
 	defer he(&err,
-		// annotate error with string info
+		// chain more error values
 		e4.WithInfo("copy %s to %s", src, dst),
-		// attach another error
 		e4.With(fmt.Errorf("copy %s to %s", src, dst)),
-		// attach a sentinel error value
 		e4.With(ErrCopyFailed),
 	)
 
 	r, err := os.Open(src)
 	// check error
 	ce(err,
-		// annotate error
+		// chain info error
 		e4.WithInfo("open %s", src),
 	)
 	defer r.Close()
@@ -54,15 +52,19 @@ func CopyFile(src, dst string) (err error) {
 	)
 
 	_, err = io.Copy(w, r)
-	// check error with if statement
+	// check error with if statement and Throw
 	if err != nil {
-		// throw error
 		e4.Throw(err,
 			e4.WithInfo("copy failed"),
 		)
 	}
-	// check error
-	ce(w.Close())
+
+	// check error with if statement and Wrap
+	if err := w.Close(); err != nil {
+		return e4.Wrap(err,
+			e4.WithInfo("close failed"),
+		)
+	}
 
 	return
 }
@@ -79,12 +81,14 @@ func (e ErrCreate) Error() string {
 
 func main() {
 
-	err := CopyFile("demo.go", filepath.Join(os.TempDir(), "demo.go"))
-	// calling Check without Handle will issue panic if error is returned
+	err := CopyFile(
+		"demo.go",
+		filepath.Join(os.TempDir(), "demo.go"),
+	)
 	ce(err)
 
 	err = CopyFile("demo.go", "/")
-	// check error with errors.Is / As
+	// match errors in chain with Is / As
 	if !errors.Is(err, ErrCopyFailed) {
 		panic("shoule be ErrCopyFailed")
 	}
@@ -92,6 +96,7 @@ func main() {
 		panic("should be ErrCreate")
 	}
 
+	// stacktrace is added automatically
 	println(err.Error())
 	/*
 	  copy failed
