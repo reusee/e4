@@ -301,40 +301,6 @@ func TestCheckerWith(t *testing.T) {
 	Check(err)
 }
 
-func TestPtrChecker(t *testing.T) {
-	err := func() (err error) {
-		defer Handle(&err)
-		err = io.EOF
-		CheckPtr(&err, With(io.ErrClosedPipe))
-		return
-	}()
-	if !is(err, io.ErrClosedPipe) {
-		t.Fatal()
-	}
-
-	err = func() (err error) {
-		defer Handle(&err)
-		err = io.EOF
-		CheckPtr(&err, Ignore(io.EOF))
-		return
-	}()
-	if err != nil {
-		t.Fatal()
-	}
-
-	check := PtrCheckerWith(Ignore(io.EOF))
-	err = func() (err error) {
-		defer Handle(&err)
-		err = io.EOF
-		check(&err)
-		return
-	}()
-	if err != nil {
-		t.Fatal()
-	}
-
-}
-
 func TestCheckIgnoreNoHandle(t *testing.T) {
 	Check(io.EOF, func(prev error) error {
 		return nil
