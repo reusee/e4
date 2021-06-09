@@ -121,6 +121,9 @@ func NewStacktrace(
 		}
 	}
 	return func(prev error) error {
+		if stacktraceIncluded(prev) {
+			return prev
+		}
 		err := MakeErr(stacktrace, prev)
 		err.flag |= flagStacktraceIncluded
 		return err
