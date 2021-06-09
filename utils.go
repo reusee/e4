@@ -42,6 +42,9 @@ func IgnoreAs(target any) WrapFunc {
 
 func IgnoreContains(str string) WrapFunc {
 	return func(prev error) error {
+		if prev == nil {
+			return nil
+		}
 		if e := prev.Error(); strings.Contains(e, str) {
 			return nil
 		}

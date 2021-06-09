@@ -79,3 +79,11 @@ func TestIgnoreContains(t *testing.T) {
 		t.Fatal()
 	}
 }
+
+func TestUtilFuncs(t *testing.T) {
+	testWrapFunc(t, Close(io.NopCloser(os.Stderr)))
+	testWrapFunc(t, Do(func() {}))
+	testWrapFunc(t, Ignore(io.EOF))
+	testWrapFunc(t, IgnoreAs(new(*os.PathError)))
+	testWrapFunc(t, IgnoreContains("foo"))
+}
