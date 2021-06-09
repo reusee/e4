@@ -27,7 +27,3 @@ func NewInfo(format string, args ...any) WrapFunc {
 		args:   args,
 	})
 }
-
-var WrapInfo = NewInfo
-
-var WithInfo = NewInfo

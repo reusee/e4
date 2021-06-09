@@ -142,11 +142,3 @@ func stacktraceIncluded(err error) bool {
 }
 
 var errStacktrace = errors.New("stacktrace")
-
-var WithStacktrace = NewStacktrace
-
-var WrapStacktrace = NewStacktrace
-
-var WithStack = NewStacktrace
-
-var WrapStack = NewStacktrace
