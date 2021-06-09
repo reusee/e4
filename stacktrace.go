@@ -84,6 +84,9 @@ func NewStacktrace(
 	skip := 1
 	for {
 		n := runtime.Callers(skip, pcs)
+		if n == 0 {
+			break
+		}
 		frames := runtime.CallersFrames(pcs[:n])
 		for {
 			skip++
