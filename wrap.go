@@ -1,5 +1,7 @@
 package e4
 
+import "testing"
+
 type WrapFunc func(err error) error
 
 func Wrap(err error, fns ...WrapFunc) error {
@@ -24,4 +26,10 @@ func DefaultWrap(err error, fns ...WrapFunc) error {
 		err = NewStacktrace()(err)
 	}
 	return err
+}
+
+func TestWrapFunc(t *testing.T, fn WrapFunc) {
+	if fn(nil) != nil {
+		t.Fatal("should return nil")
+	}
 }

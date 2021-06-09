@@ -81,9 +81,9 @@ func TestIgnoreContains(t *testing.T) {
 }
 
 func TestUtilFuncs(t *testing.T) {
-	testWrapFunc(t, Close(io.NopCloser(os.Stderr)))
-	testWrapFunc(t, Do(func() {}))
-	testWrapFunc(t, Ignore(io.EOF))
-	testWrapFunc(t, IgnoreAs(new(*os.PathError)))
-	testWrapFunc(t, IgnoreContains("foo"))
+	TestWrapFunc(t, Close(io.NopCloser(os.Stderr)))
+	TestWrapFunc(t, Do(func() {}))
+	TestWrapFunc(t, Ignore(io.EOF))
+	TestWrapFunc(t, IgnoreAs(new(*os.PathError)))
+	TestWrapFunc(t, IgnoreContains("foo"))
 }

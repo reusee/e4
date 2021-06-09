@@ -37,5 +37,5 @@ func TestError(t *testing.T) {
 }
 
 func TestWith(t *testing.T) {
-	testWrapFunc(t, With(io.EOF))
+	TestWrapFunc(t, With(io.EOF))
 }

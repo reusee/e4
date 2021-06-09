@@ -9,7 +9,7 @@ import (
 )
 
 func TestStacktrace(t *testing.T) {
-	testWrapFunc(t, NewStacktrace())
+	TestWrapFunc(t, NewStacktrace())
 
 	trace := NewStacktrace()(io.EOF)
 	ok, err := regexp.MatchString(
@@ -42,7 +42,7 @@ func TestDeepStacktrace(t *testing.T) {
 }
 
 func TestDropFrame(t *testing.T) {
-	testWrapFunc(t, DropFrame(func(frmae Frame) bool {
+	TestWrapFunc(t, DropFrame(func(frmae Frame) bool {
 		return false
 	}))
 
