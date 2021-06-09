@@ -306,3 +306,23 @@ func TestCheckIgnoreNoHandle(t *testing.T) {
 		return nil
 	})
 }
+
+func TestCheckFuncMore(t *testing.T) {
+	check := Check.With(Ignore(io.EOF))
+	err := func() (err error) {
+		defer Handle(&err)
+		check(io.EOF)
+		return
+	}()
+	if err != nil {
+		t.Fatal()
+	}
+	err = func() (err error) {
+		defer Handle(&err)
+		check(io.ErrClosedPipe)
+		return
+	}()
+	if !is(err, io.ErrClosedPipe) {
+		t.Fatal()
+	}
+}
