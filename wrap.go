@@ -17,3 +17,11 @@ func Wrap(err error, fns ...WrapFunc) error {
 	}
 	return err
 }
+
+func DefaultWrap(err error, fns ...WrapFunc) error {
+	err = Wrap(err, fns...)
+	if err != nil && !stacktraceIncluded(err) {
+		err = NewStacktrace()(err)
+	}
+	return err
+}
