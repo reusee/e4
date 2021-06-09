@@ -21,6 +21,7 @@ type Frame struct {
 	Pkg      string
 	Function string
 	Line     int
+	PkgPath  string
 }
 
 var _ error = new(Stacktrace)
@@ -79,17 +80,17 @@ func NewStacktrace() WrapFunc {
 			if i := strings.Index(dir, mod); i > 0 {
 				dir = dir[i:]
 			}
-			var pkg string
-			if fn != "" {
-				pkg = fn[:strings.IndexByte(fn, '.')]
-			}
-			stacktrace.Frames = append(stacktrace.Frames, Frame{
+			pkg := fn[:strings.IndexByte(fn, '.')]
+			pkgPath := mod + pkg
+			f := Frame{
 				File:     file,
 				Dir:      dir,
 				Line:     frame.Line,
 				Pkg:      pkg,
 				Function: fn,
-			})
+				PkgPath:  pkgPath,
+			}
+			stacktrace.Frames = append(stacktrace.Frames, f)
 			if !more {
 				break
 			}
