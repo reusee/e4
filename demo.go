@@ -21,7 +21,7 @@ func CopyFile(src, dst string) (err error) {
 	// handle error
 	defer he(&err,
 		// chain more error values
-		e4.WithInfo("copy %s to %s", src, dst),
+		e4.NewInfo("copy %s to %s", src, dst),
 		e4.With(fmt.Errorf("copy %s to %s", src, dst)),
 		e4.With(ErrCopyFailed),
 	)
@@ -30,13 +30,13 @@ func CopyFile(src, dst string) (err error) {
 	// check error
 	ce(err,
 		// chain info error
-		e4.WithInfo("open %s", src),
+		e4.NewInfo("open %s", src),
 	)
 	defer r.Close()
 
 	w, err := os.Create(dst)
 	ce(err,
-		e4.WithInfo("create %s", dst),
+		e4.NewInfo("create %s", dst),
 		e4.With(ErrCreate{
 			Path: dst,
 		}),
@@ -55,14 +55,14 @@ func CopyFile(src, dst string) (err error) {
 	// check error with if statement and Throw
 	if err != nil {
 		e4.Throw(err,
-			e4.WithInfo("copy failed"),
+			e4.NewInfo("copy failed"),
 		)
 	}
 
 	// check error with if statement and Wrap
 	if err := w.Close(); err != nil {
 		return e4.Wrap(err,
-			e4.WithInfo("close failed"),
+			e4.NewInfo("close failed"),
 		)
 	}
 
