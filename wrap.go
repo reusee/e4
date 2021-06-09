@@ -20,8 +20,6 @@ func Wrap(err error, fns ...WrapFunc) error {
 
 func DefaultWrap(err error, fns ...WrapFunc) error {
 	err = Wrap(err, fns...)
-	if err != nil && !stacktraceIncluded(err) {
-		err = NewStacktrace()(err)
-	}
+	err = Wrap(err, WrapStacktrace())
 	return err
 }

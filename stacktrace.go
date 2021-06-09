@@ -142,3 +142,15 @@ func stacktraceIncluded(err error) bool {
 }
 
 var errStacktrace = errors.New("stacktrace")
+
+func WrapStacktrace(options ...StacktraceOption) WrapFunc {
+	return func(prev error) error {
+		if prev == nil {
+			return nil
+		}
+		if stacktraceIncluded(prev) {
+			return prev
+		}
+		return NewStacktrace(options...)(prev)
+	}
+}
