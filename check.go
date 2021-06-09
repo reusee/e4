@@ -1,12 +1,14 @@
 package e4
 
-func Check(err error, fns ...WrapFunc) error {
+type CheckFunc func(err error, warpFuncs ...WrapFunc) error
+
+var Check = CheckFunc(func(err error, fns ...WrapFunc) error {
 	if err == nil {
 		return nil
 	}
 	err = DefaultWrap(err, fns...)
 	return Throw(err)
-}
+})
 
 func CheckerWith(fns ...WrapFunc) func(error, ...WrapFunc) error {
 	return func(err error, wrapFuncs ...WrapFunc) error {
