@@ -116,3 +116,25 @@ func stacktraceIncluded(err error) bool {
 }
 
 var errStacktrace = errors.New("stacktrace")
+
+func DropFrame(fn func(Frame) bool) WrapFunc {
+	return func(err error) error {
+		if err == nil {
+			return nil
+		}
+		var stacktrace *Stacktrace
+		if !errors.As(err, &stacktrace) {
+			err = NewStacktrace()(err)
+			errors.As(err, &stacktrace)
+		}
+		newFrames := stacktrace.Frames[:0]
+		for _, frame := range stacktrace.Frames {
+			if fn(frame) {
+				continue
+			}
+			newFrames = append(newFrames, frame)
+		}
+		stacktrace.Frames = newFrames
+		return err
+	}
+}

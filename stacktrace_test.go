@@ -4,6 +4,7 @@ import (
 	"errors"
 	"io"
 	"regexp"
+	"strings"
 	"testing"
 )
 
@@ -34,6 +35,23 @@ func TestDeepStacktrace(t *testing.T) {
 	}
 	err := foo(1)
 	if !errors.Is(err, io.EOF) {
+		t.Fatal()
+	}
+}
+
+func TestDropFrame(t *testing.T) {
+	err := NewStacktrace()(nil)
+	err = DropFrame(func(frame Frame) bool {
+		return !strings.Contains(frame.Function, "TestDropFrame")
+	})(err)
+	var stacktrace *Stacktrace
+	if !as(err, &stacktrace) {
+		t.Fatal()
+	}
+	if len(stacktrace.Frames) != 1 {
+		t.Fatal()
+	}
+	if !strings.Contains(stacktrace.Frames[0].Function, "TestDropFrame") {
 		t.Fatal()
 	}
 }
