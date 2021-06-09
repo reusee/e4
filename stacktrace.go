@@ -22,14 +22,6 @@ type Frame struct {
 	Line     int
 }
 
-type StacktraceOption interface {
-	IsStacktraceOption()
-}
-
-type ExcludePkg string
-
-func (_ ExcludePkg) IsStacktraceOption() {}
-
 var _ error = new(Stacktrace)
 
 func (s *Stacktrace) Error() string {
@@ -60,22 +52,7 @@ var pcsPool = internal.NewPool(
 	},
 )
 
-func NewStacktrace(
-	options ...StacktraceOption,
-) WrapFunc {
-
-	var excludePkgs map[string]struct{}
-	for _, option := range options {
-		switch option := option.(type) {
-		case ExcludePkg:
-			if excludePkgs == nil {
-				excludePkgs = make(map[string]struct{})
-			}
-			excludePkgs[string(option)] = struct{}{}
-		default:
-			panic(fmt.Errorf("unknown option: %T", option))
-		}
-	}
+func NewStacktrace() WrapFunc {
 
 	stacktrace := new(Stacktrace)
 	v, put := pcsPool.Get()
@@ -105,16 +82,13 @@ func NewStacktrace(
 			if fn != "" {
 				pkg = fn[:strings.IndexByte(fn, '.')]
 			}
-			_, ok := excludePkgs[pkg]
-			if !ok {
-				stacktrace.Frames = append(stacktrace.Frames, Frame{
-					File:     file,
-					Dir:      dir,
-					Line:     frame.Line,
-					Pkg:      pkg,
-					Function: fn,
-				})
-			}
+			stacktrace.Frames = append(stacktrace.Frames, Frame{
+				File:     file,
+				Dir:      dir,
+				Line:     frame.Line,
+				Pkg:      pkg,
+				Function: fn,
+			})
 			if !more {
 				break
 			}
@@ -142,15 +116,3 @@ func stacktraceIncluded(err error) bool {
 }
 
 var errStacktrace = errors.New("stacktrace")
-
-func WrapStacktrace(options ...StacktraceOption) WrapFunc {
-	return func(prev error) error {
-		if prev == nil {
-			return nil
-		}
-		if stacktraceIncluded(prev) {
-			return prev
-		}
-		return NewStacktrace(options...)(prev)
-	}
-}
