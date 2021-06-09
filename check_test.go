@@ -289,18 +289,6 @@ func TestMust(t *testing.T) {
 	}()
 }
 
-func TestCheckerWith(t *testing.T) {
-	ignoreEOF := func(prev error) error {
-		if is(prev, io.EOF) {
-			return nil
-		}
-		return prev
-	}
-	check := CheckerWith(ignoreEOF)
-	err := check(io.EOF)
-	Check(err)
-}
-
 func TestCheckIgnoreNoHandle(t *testing.T) {
 	Check(io.EOF, func(prev error) error {
 		return nil
