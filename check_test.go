@@ -305,12 +305,31 @@ func TestCheckFuncMore(t *testing.T) {
 	if err != nil {
 		t.Fatal()
 	}
+
 	err = func() (err error) {
 		defer Handle(&err)
 		check(io.ErrClosedPipe)
 		return
 	}()
 	if !is(err, io.ErrClosedPipe) {
+		t.Fatal()
+	}
+
+	check = check.With(Ignore(io.ErrClosedPipe))
+	err = func() (err error) {
+		defer Handle(&err)
+		check(io.EOF)
+		return
+	}()
+	if err != nil {
+		t.Fatal()
+	}
+	err = func() (err error) {
+		defer Handle(&err)
+		check(io.ErrClosedPipe)
+		return
+	}()
+	if err != nil {
 		t.Fatal()
 	}
 }

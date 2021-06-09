@@ -13,6 +13,6 @@ var Check = CheckFunc(func(err error, fns ...WrapFunc) error {
 func (c CheckFunc) With(moreWraps ...WrapFunc) CheckFunc {
 	return func(err error, fns ...WrapFunc) error {
 		err = Wrap(err, fns...)
-		return Check(err, moreWraps...)
+		return c(err, moreWraps...)
 	}
 }
