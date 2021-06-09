@@ -3,6 +3,7 @@ package e4
 import (
 	"errors"
 	"fmt"
+	"path"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -74,7 +75,7 @@ func NewStacktrace() WrapFunc {
 				continue
 			}
 			dir, file := filepath.Split(frame.File)
-			mod, fn := filepath.Split(frame.Function)
+			mod, fn := path.Split(frame.Function)
 			if i := strings.Index(dir, mod); i > 0 {
 				dir = dir[i:]
 			}
