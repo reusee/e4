@@ -308,6 +308,15 @@ func TestCheckFuncMore(t *testing.T) {
 
 	err = func() (err error) {
 		defer Handle(&err)
+		check(nil, With(io.ErrNoProgress))
+		return
+	}()
+	if err != nil {
+		t.Fatal()
+	}
+
+	err = func() (err error) {
+		defer Handle(&err)
 		check(io.ErrClosedPipe)
 		return
 	}()
