@@ -98,6 +98,9 @@ func NewStacktrace() WrapFunc {
 		}
 	}
 	return func(prev error) error {
+		if prev == nil {
+			return nil
+		}
 		if stacktraceIncluded(prev) {
 			return prev
 		}

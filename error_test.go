@@ -35,3 +35,7 @@ func TestError(t *testing.T) {
 		t.Fatal()
 	}
 }
+
+func TestWith(t *testing.T) {
+	testWrapFunc(t, With(io.EOF))
+}

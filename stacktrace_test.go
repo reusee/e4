@@ -9,6 +9,8 @@ import (
 )
 
 func TestStacktrace(t *testing.T) {
+	testWrapFunc(t, NewStacktrace())
+
 	trace := NewStacktrace()(io.EOF)
 	ok, err := regexp.MatchString(
 		`\$ e4.stacktrace_test.go:[0-9]+ .*/e4/ e4.TestStacktrace\n&.*\n&.*\nEOF`,
@@ -40,7 +42,11 @@ func TestDeepStacktrace(t *testing.T) {
 }
 
 func TestDropFrame(t *testing.T) {
-	err := NewStacktrace()(nil)
+	testWrapFunc(t, DropFrame(func(frmae Frame) bool {
+		return false
+	}))
+
+	err := NewStacktrace()(io.EOF)
 	err = DropFrame(func(frame Frame) bool {
 		return !strings.Contains(frame.Function, "TestDropFrame")
 	})(err)

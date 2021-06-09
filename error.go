@@ -44,6 +44,9 @@ func MakeErr(err error, prev error) Error {
 
 func With(err error) WrapFunc {
 	return func(prev error) error {
+		if prev == nil {
+			return nil
+		}
 		return MakeErr(err, prev)
 	}
 }
