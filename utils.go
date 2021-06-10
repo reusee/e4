@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// Close returns a WrapFunc that closes the Closer
 func Close(c io.Closer) WrapFunc {
 	return func(prev error) error {
 		if err := c.Close(); err != nil {
@@ -15,6 +16,7 @@ func Close(c io.Closer) WrapFunc {
 	}
 }
 
+// Do returns a WrapFunc that calls fn
 func Do(fn func()) WrapFunc {
 	return func(prev error) error {
 		fn()
@@ -22,6 +24,7 @@ func Do(fn func()) WrapFunc {
 	}
 }
 
+// Ignore returns a WrapFunc that returns nil if errors.Is(prev, err) is true
 func Ignore(err error) WrapFunc {
 	return func(prev error) error {
 		if errors.Is(prev, err) {
@@ -31,6 +34,7 @@ func Ignore(err error) WrapFunc {
 	}
 }
 
+// IgnoreAs returns a WrapFunc that returns nil if errors.As(prev, target) is true
 func IgnoreAs(target any) WrapFunc {
 	return func(prev error) error {
 		if errors.As(prev, target) {
@@ -40,6 +44,7 @@ func IgnoreAs(target any) WrapFunc {
 	}
 }
 
+// IgnoreContains returns a WrapFunc that returns nil if prev.Error() contains str
 func IgnoreContains(str string) WrapFunc {
 	return func(prev error) error {
 		if prev == nil {

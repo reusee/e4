@@ -16,6 +16,7 @@ func (c *throw) Unwrap() error {
 	return c.err
 }
 
+// Throw checks the error and if not nil, raise a panic which will be recovered by Handle
 func Throw(err error, fns ...WrapFunc) error {
 	if err == nil {
 		return nil

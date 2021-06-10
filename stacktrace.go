@@ -11,10 +11,12 @@ import (
 	"github.com/reusee/e4/internal"
 )
 
+// Stacktrace represents call stack frames
 type Stacktrace struct {
 	Frames []Frame
 }
 
+// Frame represents a call frame
 type Frame struct {
 	File     string
 	Dir      string
@@ -26,6 +28,7 @@ type Frame struct {
 
 var _ error = new(Stacktrace)
 
+// Error implements error interface
 func (s *Stacktrace) Error() string {
 	var b strings.Builder
 	for i, frame := range s.Frames {
@@ -54,6 +57,7 @@ var pcsPool = internal.NewPool(
 	},
 )
 
+// NewStacktrace returns a WrapFunc that wraps current stacktrace
 func NewStacktrace() WrapFunc {
 
 	stacktrace := new(Stacktrace)
@@ -125,6 +129,8 @@ func stacktraceIncluded(err error) bool {
 
 var errStacktrace = errors.New("stacktrace")
 
+// DropFrame returns a WrapFunc that drop Frames matching fn.
+// If there is no existed stacktrace in chain, a new one will be created
 func DropFrame(fn func(Frame) bool) WrapFunc {
 	return func(err error) error {
 		if err == nil {

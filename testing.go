@@ -2,6 +2,7 @@ package e4
 
 import "testing"
 
+// TestingFatal returns a WrapFunc that calls t.Fatal if error occur
 func TestingFatal(t *testing.T) WrapFunc {
 	t.Helper()
 	return func(err error) error {
