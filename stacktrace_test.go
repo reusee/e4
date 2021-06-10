@@ -61,3 +61,19 @@ func TestDropFrame(t *testing.T) {
 		t.Fatal()
 	}
 }
+
+func TestStacktraceIncluded(t *testing.T) {
+	err := Error{
+		Err: NewStacktrace()(io.EOF),
+	}
+	if !stacktraceIncluded(err) {
+		t.Fatal()
+	}
+	err = MakeErr(
+		io.EOF,
+		NewStacktrace()(io.EOF),
+	)
+	if !stacktraceIncluded(err) {
+		t.Fatal()
+	}
+}

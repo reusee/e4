@@ -113,11 +113,14 @@ func NewStacktrace() WrapFunc {
 }
 
 func stacktraceIncluded(err error) bool {
-	if e, ok := err.(Error); !ok {
-		return false
-	} else {
-		return e.flag&flagStacktraceIncluded > 0
+	if e, ok := err.(Error); ok &&
+		e.flag&flagStacktraceIncluded > 0 {
+		return true
 	}
+	if errors.As(err, new(*Stacktrace)) {
+		return true
+	}
+	return false
 }
 
 var errStacktrace = errors.New("stacktrace")
