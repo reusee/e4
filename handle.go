@@ -2,6 +2,12 @@ package e4
 
 import "errors"
 
+// Handle is for error handling
+//
+// Error raised by Throw will be catched if any.
+// If errp point to non-nil error, the error will be chained.
+// If the result error is not nil, wrap functions will be applied.
+// The result error will be assigned to errp if errp is not nil, otherwise Throw will be raised.
 func Handle(errp *error, fns ...WrapFunc) {
 	var err error
 	// check throw error

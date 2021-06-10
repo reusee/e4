@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// Error represents a chain of errors
 type Error struct {
 	Err  error
 	Prev error
@@ -12,18 +13,23 @@ type Error struct {
 	flag uint64
 }
 
+// Is reports whether any error in the chain matches target
 func (c Error) Is(target error) bool {
 	return errors.Is(c.Err, target)
 }
 
+// As reports whether any error in the chain matches target.
+// And if so, assign the first matching error to target
 func (c Error) As(target interface{}) bool {
 	return errors.As(c.Err, target)
 }
 
+// Unwrap returns Prev error
 func (c Error) Unwrap() error {
 	return c.Prev
 }
 
+// Error implements error interface
 func (c Error) Error() string {
 	var b strings.Builder
 	b.WriteString(c.Err.Error())
@@ -34,6 +40,8 @@ func (c Error) Error() string {
 	return b.String()
 }
 
+// MakeErr creates an Error with internal manipulations.
+// It's safe to construct Error without calling this function but not encouraged
 func MakeErr(err error, prev error) Error {
 	return Error{
 		Err:  err,
@@ -42,6 +50,7 @@ func MakeErr(err error, prev error) Error {
 	}
 }
 
+// With returns a WrapFunc that wraps an error value
 func With(err error) WrapFunc {
 	return func(prev error) error {
 		if prev == nil {
