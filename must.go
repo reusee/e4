@@ -8,3 +8,5 @@ func Must(err error, fns ...WrapFunc) error {
 	err = DefaultWrap(err, fns...)
 	panic(err)
 }
+
+var Fatal = Must
