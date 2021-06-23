@@ -33,6 +33,12 @@ if err != nil {
       fmt.Printf("error occur\n")
     }),
 
+    // cumstom wrap function
+    func(err error) error {
+      fmt.Printf("wrap EOF\n")
+      return e4.MakeErr(err, io.EOF)
+    },
+
   )
 }
 ```
