@@ -4,39 +4,30 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"io"
+	"io/fs"
 	"os"
-	"path/filepath"
 
 	"github.com/reusee/e4"
 )
 
 var (
 	// ergonomic aliases
-	ce, he = e4.Check, e4.Handle
+	check, handle = e4.Check, e4.Handle
 )
 
 func CopyFile(src, dst string) (err error) {
-	defer he(&err,
+	defer handle(&err,
 		e4.NewInfo("copy %s to %s", src, dst),
-		e4.With(ErrCopyFailed),
 	)
 
 	r, err := os.Open(src)
-	ce(err,
-		e4.NewInfo("open %s", src),
-	)
+	check(err)
 	defer r.Close()
 
 	w, err := os.Create(dst)
-	ce(err,
-		e4.NewInfo("create %s", dst),
-		e4.With(ErrCreate{
-			Path: dst,
-		}),
-	)
-	defer he(&err,
+	check(err)
+	defer handle(&err,
 		e4.Close(w),
 		e4.Do(func() {
 			os.Remove(dst)
@@ -44,49 +35,29 @@ func CopyFile(src, dst string) (err error) {
 	)
 
 	_, err = io.Copy(w, r)
-	ce(err)
+	check(err)
 
-	ce(w.Close())
+	check(w.Close())
 
 	return
 }
 
-var ErrCopyFailed = errors.New("copy failed")
-
-type ErrCreate struct {
-	Path string
-}
-
-func (e ErrCreate) Error() string {
-	return fmt.Sprintf("create error: %s", e.Path)
-}
-
 func main() {
 
-	err := CopyFile(
-		"demo.go",
-		filepath.Join(os.TempDir(), "demo.go"),
-	)
-	ce(err)
+	err := CopyFile("demo.go", "/")
 
-	err = CopyFile("demo.go", "/")
-	if !errors.Is(err, ErrCopyFailed) {
-		panic("shoule be ErrCopyFailed")
-	}
-	if !errors.As(err, new(ErrCreate)) {
-		panic("should be ErrCreate")
+	var pathError *fs.PathError
+	if !errors.As(err, &pathError) {
+		panic("should be path error")
 	}
 
 	println(err.Error())
 	/*
-	   copy failed
 	   copy demo.go to /
-	   $ main:demo.go:33 C:/Users/reus/reusee/e4/ main.CopyFile
-	   & main:demo.go:72 C:/Users/reus/reusee/e4/ main.main
+	   $ main:demo.go:29 C:/Users/reus/reusee/e4/ main.CopyFile
+	   & main:demo.go:47 C:/Users/reus/reusee/e4/ main.main
 	   & runtime:proc.go:225 C:/Program Files/Go/src/runtime/ runtime.main
 	   & runtime:asm_amd64.s:1371 C:/Program Files/Go/src/runtime/ runtime.goexit
-	   create error: /
-	   create /
 	   open /: is a directory
 	*/
 
