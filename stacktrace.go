@@ -77,6 +77,9 @@ func NewStacktrace() WrapFunc {
 			if strings.HasPrefix(frame.Function, "github.com/reusee/e4.") &&
 				!strings.HasPrefix(frame.Function, "github.com/reusee/e4.Test") {
 				// internal funcs
+				if !more {
+					break
+				}
 				continue
 			}
 			dir, file := filepath.Split(frame.File)
