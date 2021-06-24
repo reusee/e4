@@ -51,14 +51,6 @@ func main() {
 		panic("should be path error")
 	}
 
-	println(err.Error())
-	/*
-	   copy demo.go to /
-	   $ main:demo.go:29 C:/Users/reus/reusee/e4/ main.CopyFile
-	   & main:demo.go:47 C:/Users/reus/reusee/e4/ main.main
-	   & runtime:proc.go:225 C:/Program Files/Go/src/runtime/ runtime.main
-	   & runtime:asm_amd64.s:1371 C:/Program Files/Go/src/runtime/ runtime.goexit
-	   open /: is a directory
-	*/
+	check(err)
 
 }

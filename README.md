@@ -4,7 +4,6 @@ Error handling utilities
 ## Features
 
 * Ad-hoc error wrapping
-* Auto stacktrace wrapping
 * Alternatives to `if err != nil { return ... }` statement
 
 ## CopyFile demo
@@ -61,15 +60,7 @@ func main() {
 		panic("should be path error")
 	}
 
-	println(err.Error())
-	/*
-	   copy demo.go to /
-	   $ main:demo.go:29 C:/Users/reus/reusee/e4/ main.CopyFile
-	   & main:demo.go:47 C:/Users/reus/reusee/e4/ main.main
-	   & runtime:proc.go:225 C:/Program Files/Go/src/runtime/ runtime.main
-	   & runtime:asm_amd64.s:1371 C:/Program Files/Go/src/runtime/ runtime.goexit
-	   open /: is a directory
-	*/
+	check(err)
 
 }
 ```
@@ -176,14 +167,14 @@ func foo() (err error) {
 }
 ```
 
-### Auto wrapping stacktrace
+### Check with stacktrace
 
-Errors checked by `e4.Check` are implicitly wrapped by stacktrace.
+Errors checked by `e4.CheckWithStacktrace` are implicitly wrapped by stacktrace.
 
 ```go
 func foo() (err error) {
   defer e4.Handle(&err)
-  e4.Check(io.EOF)
+  e4.CheckWithStacktrace(io.EOF)
 }
 
 err := foo()
@@ -193,12 +184,10 @@ errors.As(err, &trace) // true
 
 ```
 
-The `e4.DefaultWrap` function also wraps stacktrace automatically.
-
-To drop not-interested frames from the stacktrace, decorate the `e4.Check` with `e4.DropFrame`
+To drop not-interested frames from the stacktrace, decorate the `e4.CheckWithStacktrace` with `e4.DropFrame`
 
 ```go
-var check = e4.Check.With(e4.DropFrame(func(frame e4.Frame) bool {
+var check = e4.CheckWithStacktrace.With(e4.DropFrame(func(frame e4.Frame) bool {
   // drop runtime and reflect frames
   return frame.PkgPath == "runtime" || 
     frame.PkgPath == "reflect"
