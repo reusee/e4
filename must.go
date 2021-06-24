@@ -5,7 +5,7 @@ func Must(err error, fns ...WrapFunc) error {
 	if err == nil {
 		return nil
 	}
-	err = DefaultWrap(err, fns...)
+	err = Wrap(err, fns...)
 	panic(err)
 }
 

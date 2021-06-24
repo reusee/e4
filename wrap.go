@@ -25,15 +25,6 @@ func Wrap(err error, fns ...WrapFunc) error {
 	return err
 }
 
-// DefaultWrap wraps error with stacktrace
-func DefaultWrap(err error, fns ...WrapFunc) error {
-	err = Wrap(err, fns...)
-	if err != nil && !stacktraceIncluded(err) {
-		err = NewStacktrace()(err)
-	}
-	return err
-}
-
 // TestWrapFunc tests a WrapFunc instance
 func TestWrapFunc(t *testing.T, fn WrapFunc) {
 	if fn(nil) != nil {

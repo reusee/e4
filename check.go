@@ -9,7 +9,7 @@ var Check = CheckFunc(func(err error, fns ...WrapFunc) error {
 	if err == nil {
 		return nil
 	}
-	err = DefaultWrap(err, fns...)
+	err = Wrap(err, fns...)
 	return Throw(err)
 })
 
@@ -23,3 +23,7 @@ func (c CheckFunc) With(moreWraps ...WrapFunc) CheckFunc {
 		return c(err, moreWraps...)
 	}
 }
+
+var CheckWithStacktrace = Check.With(func(err error) error {
+	return NewStacktrace()(err)
+})

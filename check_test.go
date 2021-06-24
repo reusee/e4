@@ -54,7 +54,7 @@ func TestCheck(t *testing.T) {
 		t.Fatal()
 	}
 	ok, e = regexp.MatchString(
-		`foo bar\n\$ .*check_test.go:[0-9]+.*\n&.*\n&.*\n&.*\nEOF`,
+		`foo bar\nEOF`,
 		err.Error(),
 	)
 	if e != nil {
@@ -166,16 +166,6 @@ func TestCheck(t *testing.T) {
 		return
 	}()
 	if !is(err, io.EOF) {
-		t.Fatal()
-	}
-	er, ok := err.(Error)
-	if !ok {
-		t.Fatal()
-	}
-	if _, ok := er.Err.(*Stacktrace); !ok {
-		t.Fatal()
-	}
-	if er.Prev != io.EOF {
 		t.Fatal()
 	}
 

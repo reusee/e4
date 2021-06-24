@@ -22,7 +22,7 @@ func Throw(err error, fns ...WrapFunc) error {
 		return nil
 	}
 	if len(fns) > 0 {
-		err = DefaultWrap(err, fns...)
+		err = Wrap(err, fns...)
 	}
 	if err == nil {
 		return nil
