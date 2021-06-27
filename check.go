@@ -24,6 +24,4 @@ func (c CheckFunc) With(moreWraps ...WrapFunc) CheckFunc {
 	}
 }
 
-var CheckWithStacktrace = Check.With(func(err error) error {
-	return NewStacktrace()(err)
-})
+var CheckWithStacktrace = Check.With(StacktraceWrapper)

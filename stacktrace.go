@@ -155,3 +155,7 @@ func DropFrame(fn func(Frame) bool) WrapFunc {
 		return err
 	}
 }
+
+func StacktraceWrapper(err error) error {
+	return NewStacktrace()(err)
+}
