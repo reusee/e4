@@ -10,19 +10,19 @@ type WrapFunc func(err error) error
 
 // Wrap forms an error chain by calling wrap functions in order
 func Wrap(err error, fns ...WrapFunc) error {
-	for _, fn := range fns {
-		e := fn(err)
-		if e != nil {
-			if _, ok := e.(Error); !ok {
-				err = MakeErr(e, err)
-			} else {
-				err = e
-			}
-		} else {
-			return nil
-		}
+	if len(fns) == 0 {
+		return err
 	}
-	return err
+	fn := fns[0]
+	fns = fns[1:]
+	wrapped := fn(err)
+	if wrapped == nil {
+		return nil
+	}
+	if _, ok := wrapped.(Error); ok {
+		return Wrap(wrapped, fns...)
+	}
+	return Wrap(MakeErr(wrapped, err), fns...)
 }
 
 // TestWrapFunc tests a WrapFunc instance
