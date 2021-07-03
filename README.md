@@ -4,7 +4,13 @@ Error handling utilities
 ## Features
 
 * Ad-hoc error wrapping
+  + easy to chain multiple error values
+  + no need to implement Unwrap / Is / As for every error type
+  + inspect error hierarchy with standard errors.Is / As
 * Alternatives to `if err != nil { return ... }` statement
+  + utilizing panic / recover
+  + but not crossing the function boundary
+  + not forced to use, play well with existing codes
 
 ## CopyFile demo
 
