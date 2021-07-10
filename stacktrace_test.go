@@ -77,3 +77,9 @@ func TestStacktraceIncluded(t *testing.T) {
 		t.Fatal()
 	}
 }
+
+func BenchmarkStacktrace(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		NewStacktrace()(io.EOF)
+	}
+}
