@@ -164,7 +164,7 @@ func foo() (err error) {
   e4.Check(bar(),
     e4.With(fmt.Errorf("bar error")),
     // wrap stack trace
-    e4.StacktraceWrapper,
+    e4.WrapStacktrace,
     // ignore errors that errors.Is return true
     e4.Ignore(io.EOF),
     // ignore errors that errors.As return true

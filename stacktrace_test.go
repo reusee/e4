@@ -9,9 +9,9 @@ import (
 )
 
 func TestStacktrace(t *testing.T) {
-	TestWrapFunc(t, NewStacktrace())
+	TestWrapFunc(t, WrapStacktrace)
 
-	trace := NewStacktrace()(io.EOF)
+	trace := WrapStacktrace(io.EOF)
 	ok, err := regexp.MatchString(
 		`\$ e4.stacktrace_test.go:[0-9]+ .*/e4/ e4.TestStacktrace\n&.*\n&.*\nEOF`,
 		trace.Error(),
@@ -33,7 +33,7 @@ func TestDeepStacktrace(t *testing.T) {
 		if i < 128 {
 			return foo(i + 1)
 		}
-		return NewStacktrace()(io.EOF)
+		return WrapStacktrace(io.EOF)
 	}
 	err := foo(1)
 	if !errors.Is(err, io.EOF) {
@@ -46,7 +46,7 @@ func TestDropFrame(t *testing.T) {
 		return false
 	}))
 
-	err := NewStacktrace()(io.EOF)
+	err := WrapStacktrace(io.EOF)
 	err = DropFrame(func(frame Frame) bool {
 		return !strings.Contains(frame.Function, "TestDropFrame")
 	})(err)
@@ -64,14 +64,14 @@ func TestDropFrame(t *testing.T) {
 
 func TestStacktraceIncluded(t *testing.T) {
 	err := Error{
-		Err: NewStacktrace()(io.EOF),
+		Err: WrapStacktrace(io.EOF),
 	}
 	if !stacktraceIncluded(err) {
 		t.Fatal()
 	}
 	err = MakeErr(
 		io.EOF,
-		NewStacktrace()(io.EOF),
+		WrapStacktrace(io.EOF),
 	)
 	if !stacktraceIncluded(err) {
 		t.Fatal()
@@ -80,6 +80,6 @@ func TestStacktraceIncluded(t *testing.T) {
 
 func BenchmarkStacktrace(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		NewStacktrace()(io.EOF)
+		WrapStacktrace(io.EOF)
 	}
 }

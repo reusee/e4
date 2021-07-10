@@ -67,8 +67,14 @@ var frameCache = func() *lru.Cache {
 	return cache
 }()
 
-// NewStacktrace returns a WrapFunc that wraps current stacktrace
-func NewStacktrace() WrapFunc {
+// WrapStacktrace wraps current stacktrace
+var WrapStacktrace = WrapFunc(func(prev error) error {
+	if prev == nil {
+		return nil
+	}
+	if stacktraceIncluded(prev) {
+		return prev
+	}
 
 	stacktrace := new(Stacktrace)
 	v, put := pcsPool.Get()
@@ -128,18 +134,11 @@ func NewStacktrace() WrapFunc {
 			break
 		}
 	}
-	return func(prev error) error {
-		if prev == nil {
-			return nil
-		}
-		if stacktraceIncluded(prev) {
-			return prev
-		}
-		err := MakeErr(stacktrace, prev)
-		err.flag |= flagStacktraceIncluded
-		return err
-	}
-}
+
+	err := MakeErr(stacktrace, prev)
+	err.flag |= flagStacktraceIncluded
+	return err
+})
 
 func stacktraceIncluded(err error) bool {
 	if e, ok := err.(Error); ok &&
@@ -163,7 +162,7 @@ func DropFrame(fn func(Frame) bool) WrapFunc {
 		}
 		var stacktrace *Stacktrace
 		if !errors.As(err, &stacktrace) {
-			err = NewStacktrace()(err)
+			err = WrapStacktrace(err)
 			errors.As(err, &stacktrace)
 		}
 		newFrames := stacktrace.Frames[:0]
@@ -177,7 +176,3 @@ func DropFrame(fn func(Frame) bool) WrapFunc {
 		return err
 	}
 }
-
-var StacktraceWrapper = WrapFunc(func(err error) error {
-	return NewStacktrace()(err)
-})
