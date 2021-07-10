@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"sync"
 
 	"github.com/reusee/e4/internal"
 )
@@ -57,6 +58,8 @@ var pcsPool = internal.NewPool(
 	},
 )
 
+var frameCache sync.Map
+
 // NewStacktrace returns a WrapFunc that wraps current stacktrace
 func NewStacktrace() WrapFunc {
 
@@ -70,37 +73,49 @@ func NewStacktrace() WrapFunc {
 		if n == 0 {
 			break
 		}
-		frames := runtime.CallersFrames(pcs[:n])
-		for {
-			skip++
-			frame, more := frames.Next()
-			if strings.HasPrefix(frame.Function, "github.com/reusee/e4.") &&
-				!strings.HasPrefix(frame.Function, "github.com/reusee/e4.Test") {
-				// internal funcs
+		for i := 0; i < n; i++ {
+			pc := pcs[i]
+			if v, ok := frameCache.Load(pc); ok {
+				slice := v.([]Frame)
+				stacktrace.Frames = append(stacktrace.Frames, slice...)
+				skip += len(slice)
+				continue
+			}
+			var slice []Frame
+			frames := runtime.CallersFrames(pcs[i : i+1])
+			for {
+				skip++
+				frame, more := frames.Next()
+				if strings.HasPrefix(frame.Function, "github.com/reusee/e4.") &&
+					!strings.HasPrefix(frame.Function, "github.com/reusee/e4.Test") {
+					// internal funcs
+					if !more {
+						break
+					}
+					continue
+				}
+				dir, file := filepath.Split(frame.File)
+				mod, fn := path.Split(frame.Function)
+				if i := strings.Index(dir, mod); i > 0 {
+					dir = dir[i:]
+				}
+				pkg := fn[:strings.IndexByte(fn, '.')]
+				pkgPath := mod + pkg
+				f := Frame{
+					File:     file,
+					Dir:      dir,
+					Line:     frame.Line,
+					Pkg:      pkg,
+					Function: fn,
+					PkgPath:  pkgPath,
+				}
+				slice = append(slice, f)
 				if !more {
 					break
 				}
-				continue
 			}
-			dir, file := filepath.Split(frame.File)
-			mod, fn := path.Split(frame.Function)
-			if i := strings.Index(dir, mod); i > 0 {
-				dir = dir[i:]
-			}
-			pkg := fn[:strings.IndexByte(fn, '.')]
-			pkgPath := mod + pkg
-			f := Frame{
-				File:     file,
-				Dir:      dir,
-				Line:     frame.Line,
-				Pkg:      pkg,
-				Function: fn,
-				PkgPath:  pkgPath,
-			}
-			stacktrace.Frames = append(stacktrace.Frames, f)
-			if !more {
-				break
-			}
+			stacktrace.Frames = append(stacktrace.Frames, slice...)
+			frameCache.Store(pc, slice)
 		}
 		if n < len(pcs) {
 			break
