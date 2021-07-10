@@ -7,7 +7,8 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
-	"sync"
+
+	lru "github.com/hashicorp/golang-lru"
 
 	"github.com/reusee/e4/internal"
 )
@@ -58,7 +59,13 @@ var pcsPool = internal.NewPool(
 	},
 )
 
-var frameCache sync.Map
+var frameCache = func() *lru.Cache {
+	cache, err := lru.New(1024)
+	if err != nil {
+		panic(err)
+	}
+	return cache
+}()
 
 // NewStacktrace returns a WrapFunc that wraps current stacktrace
 func NewStacktrace() WrapFunc {
@@ -75,7 +82,7 @@ func NewStacktrace() WrapFunc {
 		}
 		for i := 0; i < n; i++ {
 			pc := pcs[i]
-			if v, ok := frameCache.Load(pc); ok {
+			if v, ok := frameCache.Get(pc); ok {
 				slice := v.([]Frame)
 				stacktrace.Frames = append(stacktrace.Frames, slice...)
 				skip += len(slice)
@@ -115,7 +122,7 @@ func NewStacktrace() WrapFunc {
 				}
 			}
 			stacktrace.Frames = append(stacktrace.Frames, slice...)
-			frameCache.Store(pc, slice)
+			frameCache.Add(pc, slice)
 		}
 		if n < len(pcs) {
 			break
