@@ -43,4 +43,4 @@ func TestWrapFunc(t *testing.T, fn WrapFunc) {
 	}
 }
 
-var WrapWithStacktrace = StacktraceWrapper.With
+var WrapWithStacktrace = StacktraceWrapper.Wrap
