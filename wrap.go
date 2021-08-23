@@ -40,5 +40,3 @@ func TestWrapFunc(t *testing.T, fn WrapFunc) {
 		t.Fatal("should return nil")
 	}
 }
-
-var WrapWithStacktrace = Wrap(WrapStacktrace).With

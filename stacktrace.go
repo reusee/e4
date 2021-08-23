@@ -176,3 +176,5 @@ func DropFrame(fn func(Frame) bool) WrapFunc {
 		return err
 	}
 }
+
+var WrapWithStacktrace = WrapStacktrace.With
