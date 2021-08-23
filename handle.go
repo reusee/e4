@@ -35,7 +35,7 @@ func Handle(errp *error, fns ...WrapFunc) {
 		return
 	}
 	// wrap
-	err = Wrap(err, fns...)
+	err = Wrap(fns...)(err)
 	if errp != nil {
 		// set pointed variable
 		*errp = err

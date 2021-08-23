@@ -13,14 +13,14 @@ func (c closer) Close() error {
 }
 
 func TestClose(t *testing.T) {
-	err := Wrap(io.EOF,
+	err := Wrap(
 		Close(closer(func() error {
 			return io.ErrClosedPipe
 		})),
 		Close(closer(func() error {
 			return nil
 		})),
-	)
+	)(io.EOF)
 	if !is(err, io.EOF) {
 		t.Fatal()
 	}

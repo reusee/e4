@@ -9,7 +9,7 @@ var Check = CheckFunc(func(err error, fns ...WrapFunc) error {
 	if err == nil {
 		return nil
 	}
-	err = Wrap(err, fns...)
+	err = Wrap(fns...)(err)
 	return Throw(err)
 })
 
@@ -19,7 +19,7 @@ func (c CheckFunc) With(moreWraps ...WrapFunc) CheckFunc {
 		if err == nil {
 			return nil
 		}
-		err = Wrap(err, fns...)
+		err = Wrap(fns...)(err)
 		return c(err, moreWraps...)
 	}
 }
