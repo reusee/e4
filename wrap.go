@@ -8,29 +8,26 @@ import "testing"
 // if argument is nil, return value must be nil
 type WrapFunc func(err error) error
 
-// Wrap combines multiple WrapFuncs sequentially
-func Wrap(fns ...WrapFunc) WrapFunc {
-	return func(err error) error {
-		if err == nil {
-			return nil
-		}
-		if len(fns) == 0 {
-			return err
-		}
-		wrapped := fns[0](err)
-		if wrapped == nil {
-			return nil
-		}
-		if _, ok := wrapped.(Error); ok {
-			return Wrap(fns[1:]...)(wrapped)
-		}
-		return Wrap(fns[1:]...)(MakeErr(wrapped, err))
-	}
-}
+var Wrap = WrapFunc(func(err error) error {
+	return err
+})
 
 func (w WrapFunc) With(fns ...WrapFunc) WrapFunc {
 	return func(err error) error {
-		return Wrap(fns...)(w(err))
+		for _, fn := range fns {
+			if err == nil {
+				return nil
+			}
+			wrapped := fn(err)
+			if wrapped == nil {
+				return nil
+			}
+			if _, ok := wrapped.(Error); !ok {
+				wrapped = MakeErr(wrapped, err)
+			}
+			err = wrapped
+		}
+		return err
 	}
 }
 

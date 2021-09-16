@@ -13,7 +13,7 @@ func (c closer) Close() error {
 }
 
 func TestClose(t *testing.T) {
-	err := Wrap(
+	err := Wrap.With(
 		Close(closer(func() error {
 			return io.ErrClosedPipe
 		})),

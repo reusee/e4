@@ -81,7 +81,7 @@ errors can be wrapped with `e4.Wrap` and various util functions.
 err := foo()
 
 if err != nil {
-  return e4.Wrap(
+  return e4.Wrap.With(
 
     // wrap another error value
     e4.With(io.ErrUnexpectedEOF),
@@ -112,13 +112,13 @@ wrapped errors can be inspected with `errors.Is` or `errors.As`
 ```go
 errFoo := errors.New("foo")
 
-err := e4.Wrap(
+err := e4.Wrap.With(
   e4.With(io.ErrUnexpectedEOF),
   e4.With(errFoo),
   e4.With(new(fs.PathError)),
   // wrap a nested error
-  e4.With(e4.Wrap(fs.ErrInvalid,
-    e4.With(e4.Wrap(io.ErrClosedPipe,
+  e4.With(e4.Wrap.With(fs.ErrInvalid,
+    e4.With(e4.Wrap.With(io.ErrClosedPipe,
       e4.With(io.ErrShortWrite))))),
 )(io.EOF)
 
