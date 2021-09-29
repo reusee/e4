@@ -42,7 +42,9 @@ func (c Error) Error() string {
 	if c.Prev != nil {
 		prev := c.Prev.Error()
 		if prev != "" {
-			b.WriteString("\n")
+			if b.Len() > 0 {
+				b.WriteString("\n")
+			}
 			b.WriteString(prev)
 		}
 	}
