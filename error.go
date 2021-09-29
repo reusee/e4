@@ -32,10 +32,19 @@ func (c Error) Unwrap() error {
 // Error implements error interface
 func (c Error) Error() string {
 	var b strings.Builder
-	b.WriteString(c.Err.Error())
+	if leveled, ok := c.Err.(ErrorLeveler); ok {
+		if leveled.ErrorLevel() <= ErrorLevel {
+			b.WriteString(c.Err.Error())
+		}
+	} else {
+		b.WriteString(c.Err.Error())
+	}
 	if c.Prev != nil {
-		b.WriteString("\n")
-		b.WriteString(c.Prev.Error())
+		prev := c.Prev.Error()
+		if prev != "" {
+			b.WriteString("\n")
+			b.WriteString(prev)
+		}
 	}
 	return b.String()
 }
