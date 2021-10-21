@@ -1,20 +1,22 @@
 package e4
 
-type Debug struct {
-	*Info
+type ErrDebug struct {
+	*ErrInfo
 }
 
-var _ error = new(Debug)
+var _ error = new(ErrDebug)
 
-func (d Debug) ErrorLevel() Level {
+func (d ErrDebug) ErrorLevel() Level {
 	return DebugLevel
 }
 
-func NewDebug(format string, args ...any) WrapFunc {
-	return With(&Debug{
-		Info: &Info{
+func Debug(format string, args ...any) WrapFunc {
+	return With(&ErrDebug{
+		ErrInfo: &ErrInfo{
 			format: format,
 			args:   args,
 		},
 	})
 }
+
+var NewDebug = Debug

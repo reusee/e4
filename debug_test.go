@@ -6,12 +6,12 @@ import (
 )
 
 func TestDebug(t *testing.T) {
-	err := NewDebug("foo")(io.EOF)
+	err := Debug("foo")(io.EOF)
 	if err.Error() != io.EOF.Error() {
 		t.Fatal()
 	}
 	ErrorLevel = DebugLevel
-	err = NewDebug("foo")(io.EOF)
+	err = Debug("foo")(io.EOF)
 	if err.Error() != "foo\n"+io.EOF.Error() {
 		t.Fatal()
 	}
