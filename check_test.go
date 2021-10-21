@@ -27,7 +27,7 @@ func TestCheck(t *testing.T) {
 	// check with wrap funcs
 	err = func() (err error) {
 		defer Handle(&err)
-		Check(io.EOF, NewInfo("foo %s", "bar"))
+		Check(io.EOF, Info("foo %s", "bar"))
 		return
 	}()
 	if !is(err, io.EOF) {
@@ -46,7 +46,7 @@ func TestCheck(t *testing.T) {
 
 	// handle with wrap funcs
 	err = func() (err error) {
-		defer Handle(&err, NewInfo("foo %s", "bar"))
+		defer Handle(&err, Info("foo %s", "bar"))
 		Check(io.EOF)
 		return
 	}()
@@ -99,7 +99,7 @@ func TestCheck(t *testing.T) {
 
 	// return and handle
 	err = func() (err error) {
-		defer Handle(&err, NewInfo("foo %s", "bar"))
+		defer Handle(&err, Info("foo %s", "bar"))
 		return io.EOF
 	}()
 	if err.Error() != "foo bar\nEOF" {
@@ -111,7 +111,7 @@ func TestCheck(t *testing.T) {
 
 	// return nil and handle
 	err = func() (err error) {
-		defer Handle(&err, NewInfo("foo %s", "bar"))
+		defer Handle(&err, Info("foo %s", "bar"))
 		return nil
 	}()
 	if err != nil {

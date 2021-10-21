@@ -6,9 +6,9 @@ import (
 )
 
 func TestInfo(t *testing.T) {
-	TestWrapFunc(t, NewInfo("foo"))
+	TestWrapFunc(t, Info("foo"))
 
-	info := NewInfo("foo %s", "bar")(io.EOF)
+	info := Info("foo %s", "bar")(io.EOF)
 	if info.Error() != "foo bar\nEOF" {
 		t.Fatalf("got %s", info.Error())
 	}

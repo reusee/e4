@@ -35,7 +35,7 @@ var (
 
 func CopyFile(src, dst string) (err error) {
 	defer handle(&err,
-		e4.NewInfo("copy %s to %s", src, dst),
+		e4.Info("copy %s to %s", src, dst),
 	)
 
 	r, err := os.Open(src)
@@ -90,7 +90,7 @@ import (
 func CopyFile(src, dst string) (err error) {
 	wrap := e4.Wrap.With(
 		e4.WrapStacktrace,
-		e4.NewInfo("copy %s to %s", src, dst),
+		e4.Info("copy %s to %s", src, dst),
 	)
 
 	r, err := os.Open(src)
@@ -154,7 +154,7 @@ if err != nil {
     e4.With(io.ErrUnexpectedEOF),
 
     // wrap a lazy-formatted message
-    e4.NewInfo("unexpected %s", "EOF"),
+    e4.Info("unexpected %s", "EOF"),
 
     // close a io.Closer
     e4.Close(w),
