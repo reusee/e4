@@ -87,23 +87,23 @@ import (
 	"github.com/reusee/e4"
 )
 
-var (
-	// ergonomic aliases
-	check, handle = e4.Check, e4.Handle
-)
-
 func CopyFile(src, dst string) (err error) {
-	defer handle(&err,
+	wrap := e4.Wrap.With(
+		e4.WrapStacktrace,
 		e4.NewInfo("copy %s to %s", src, dst),
 	)
 
 	r, err := os.Open(src)
-	check(err)
+	if err != nil {
+		return wrap(err)
+	}
 	defer r.Close()
 
 	w, err := os.Create(dst)
-	check(err)
-	defer handle(&err,
+	if err != nil {
+		return wrap(err)
+	}
+	wrap = wrap.With(
 		e4.Close(w),
 		e4.Do(func() {
 			os.Remove(dst)
@@ -111,9 +111,13 @@ func CopyFile(src, dst string) (err error) {
 	)
 
 	_, err = io.Copy(w, r)
-	check(err)
+	if err != nil {
+		return wrap(err)
+	}
 
-	check(w.Close())
+	if err := w.Close(); err != nil {
+		return wrap(err)
+	}
 
 	return
 }
@@ -127,7 +131,9 @@ func main() {
 		panic("should be path error")
 	}
 
-	check(err)
+	if err != nil {
+		panic(err)
+	}
 
 }
 ```

@@ -12,13 +12,9 @@ import (
 	"github.com/reusee/e4"
 )
 
-var (
-	// ergonomic aliases
-	wrap = e4.Wrap
-)
-
 func CopyFile(src, dst string) (err error) {
-	wrap = wrap.With(
+	wrap := e4.Wrap.With(
+		e4.WrapStacktrace,
 		e4.NewInfo("copy %s to %s", src, dst),
 	)
 
