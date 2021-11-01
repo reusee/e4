@@ -31,6 +31,12 @@ func (w WrapFunc) With(fns ...WrapFunc) WrapFunc {
 	}
 }
 
+func (w WrapFunc) Assign(p *error) {
+	if p != nil && *p != nil {
+		*p = w(*p)
+	}
+}
+
 // TestWrapFunc tests a WrapFunc instance
 func TestWrapFunc(t *testing.T, fn WrapFunc) {
 	if fn(nil) != nil {
