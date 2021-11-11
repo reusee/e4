@@ -151,7 +151,7 @@ if err != nil {
   return e4.Wrap.With(
 
     // wrap another error value
-    e4.With(io.ErrUnexpectedEOF),
+    io.ErrUnexpectedEOF,
 
     // wrap a lazy-formatted message
     e4.Info("unexpected %s", "EOF"),
@@ -180,13 +180,17 @@ wrapped errors can be inspected with `errors.Is` or `errors.As`
 errFoo := errors.New("foo")
 
 err := e4.Wrap.With(
-  e4.With(io.ErrUnexpectedEOF),
-  e4.With(errFoo),
-  e4.With(new(fs.PathError)),
+  io.ErrUnexpectedEOF,
+  errFoo,
+  new(fs.PathError),
   // wrap a nested error
-  e4.With(e4.Wrap.With(fs.ErrInvalid,
-    e4.With(e4.Wrap.With(io.ErrClosedPipe,
-      e4.With(io.ErrShortWrite))))),
+  e4.Wrap.With(
+    fs.ErrInvalid,
+    e4.Wrap.With(
+      io.ErrClosedPipe,
+      io.ErrShortWrite,
+    ),
+  ),
 )(io.EOF)
 
 errors.Is(err, io.EOF) // true
@@ -223,13 +227,13 @@ Error wrapping also works in the Check site or the Handle site
 ```go
 func foo() (err error) {
   defer e4.Handle(&err,
-    e4.With(fmt.Errorf("foo error")),
+    fmt.Errorf("foo error"),
     e4.Do(func() {
       fmt.Printf("foo error\n")
     }),
   )
   e4.Check(bar(),
-    e4.With(fmt.Errorf("bar error")),
+    fmt.Errorf("bar error"),
     // wrap stack trace
     e4.WrapStacktrace,
     // ignore errors that errors.Is return true
@@ -257,17 +261,5 @@ err := foo()
 var trace *e4.Stacktrace
 errors.As(err, &trace) // true
 
-```
-
-To drop not-interested frames from the stacktrace, decorate the `e4.CheckWithStacktrace` with `e4.DropFrame`
-
-```go
-var check = e4.CheckWithStacktrace.With(e4.DropFrame(func(frame e4.Frame) bool {
-  // drop runtime and reflect frames
-  return frame.PkgPath == "runtime" || 
-    frame.PkgPath == "reflect"
-}))
-
-check(io.EOF)
 ```
 
