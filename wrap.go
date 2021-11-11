@@ -8,17 +8,27 @@ import "testing"
 // if argument is nil, return value must be nil
 type WrapFunc func(err error) error
 
+var _ error = WrapFunc(nil)
+
 var Wrap = WrapFunc(func(err error) error {
 	return err
 })
 
-func (w WrapFunc) With(fns ...WrapFunc) WrapFunc {
+func (w WrapFunc) With(args ...error) WrapFunc {
+	// convert to WrapFuncs
+	for i, arg := range args {
+		switch arg := arg.(type) {
+		case WrapFunc:
+		case error:
+			args[i] = With(arg)
+		}
+	}
 	return func(err error) error {
-		for _, fn := range fns {
+		for _, arg := range args {
 			if err == nil {
 				return nil
 			}
-			wrapped := fn(err)
+			wrapped := arg.(WrapFunc)(err)
 			if wrapped == nil {
 				return nil
 			}
@@ -29,6 +39,10 @@ func (w WrapFunc) With(fns ...WrapFunc) WrapFunc {
 		}
 		return err
 	}
+}
+
+func (w WrapFunc) Error() string {
+	panic("should not used as error")
 }
 
 func (w WrapFunc) Assign(p *error) {

@@ -8,7 +8,7 @@ import "errors"
 // If errp point to non-nil error, the error will be chained.
 // If the result error is not nil, wrap functions will be applied.
 // The result error will be assigned to errp if errp is not nil, otherwise Throw will be raised.
-func Handle(errp *error, fns ...WrapFunc) {
+func Handle(errp *error, args ...error) {
 	var err error
 	// check throw error
 	if p := recover(); p != nil {
@@ -35,7 +35,7 @@ func Handle(errp *error, fns ...WrapFunc) {
 		return
 	}
 	// wrap
-	err = Wrap.With(fns...)(err)
+	err = Wrap.With(args...)(err)
 	if errp != nil {
 		// set pointed variable
 		*errp = err

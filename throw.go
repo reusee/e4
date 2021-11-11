@@ -17,12 +17,12 @@ func (c *throw) Unwrap() error {
 }
 
 // Throw checks the error and if not nil, raise a panic which will be recovered by Handle
-func Throw(err error, fns ...WrapFunc) error {
+func Throw(err error, args ...error) error {
 	if err == nil {
 		return nil
 	}
-	if len(fns) > 0 {
-		err = Wrap.With(fns...)(err)
+	if len(args) > 0 {
+		err = Wrap.With(args...)(err)
 	}
 	if err == nil {
 		return nil

@@ -6,13 +6,13 @@ import "testing"
 func TestingFatal(t *testing.T) WrapFunc {
 	t.Helper()
 	return WrapStacktrace.With(
-		func(err error) error {
+		WrapFunc(func(err error) error {
 			if err == nil {
 				return nil
 			}
 			t.Helper()
 			t.Fatal(err)
 			return err
-		},
+		}),
 	)
 }

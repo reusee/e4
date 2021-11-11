@@ -121,9 +121,9 @@ func TestCheck(t *testing.T) {
 	// set error to nil in check wrap func
 	err = func() (err error) {
 		defer Handle(&err)
-		Check(io.EOF, func(err error) error {
+		Check(io.EOF, WrapFunc(func(err error) error {
 			return nil
-		})
+		}))
 		return
 	}()
 	if err != nil {
@@ -134,9 +134,9 @@ func TestCheck(t *testing.T) {
 	err = func() (err error) {
 		defer Handle(
 			&err,
-			func(err error) error {
+			WrapFunc(func(err error) error {
 				return nil
-			},
+			}),
 		)
 		return io.EOF
 	}()
@@ -173,9 +173,9 @@ func TestCheck(t *testing.T) {
 	err = func() (err error) {
 		defer Handle(&err)
 		err = io.EOF
-		Check(io.ErrNoProgress, func(prev error) error {
+		Check(io.ErrNoProgress, WrapFunc(func(prev error) error {
 			return nil
-		})
+		}))
 		return
 	}()
 	if !is(err, io.EOF) {
@@ -190,9 +190,9 @@ func TestCheck(t *testing.T) {
 		defer Handle(&err)
 		Check(
 			io.EOF,
-			func(err error) error {
+			WrapFunc(func(err error) error {
 				return io.ErrClosedPipe
-			},
+			}),
 		)
 		return
 	}()
@@ -280,9 +280,9 @@ func TestMust(t *testing.T) {
 }
 
 func TestCheckIgnoreNoHandle(t *testing.T) {
-	Check(io.EOF, func(prev error) error {
+	Check(io.EOF, WrapFunc(func(prev error) error {
 		return nil
-	})
+	}))
 }
 
 func TestCheckFuncMore(t *testing.T) {
