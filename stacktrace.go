@@ -8,8 +8,6 @@ import (
 	"runtime"
 	"strings"
 
-	lru "github.com/hashicorp/golang-lru"
-
 	"github.com/reusee/e4/internal"
 )
 
@@ -59,14 +57,6 @@ var pcsPool = internal.NewPool(
 	},
 )
 
-var frameCache = func() *lru.Cache {
-	cache, err := lru.New(1024)
-	if err != nil {
-		panic(err)
-	}
-	return cache
-}()
-
 // WrapStacktrace wraps current stacktrace
 var WrapStacktrace = WrapFunc(func(prev error) error {
 	if prev == nil {
@@ -87,13 +77,6 @@ var WrapStacktrace = WrapFunc(func(prev error) error {
 			break
 		}
 		for i := 0; i < n; i++ {
-			pc := pcs[i]
-			if v, ok := frameCache.Get(pc); ok {
-				slice := v.([]Frame)
-				stacktrace.Frames = append(stacktrace.Frames, slice...)
-				skip += len(slice)
-				continue
-			}
 			var slice []Frame
 			frames := runtime.CallersFrames(pcs[i : i+1])
 			for {
@@ -128,7 +111,6 @@ var WrapStacktrace = WrapFunc(func(prev error) error {
 				}
 			}
 			stacktrace.Frames = append(stacktrace.Frames, slice...)
-			frameCache.Add(pc, slice)
 		}
 		if n < len(pcs) {
 			break
